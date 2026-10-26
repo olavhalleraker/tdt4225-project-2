@@ -1,0 +1,141 @@
+Connected to MongoDB 7.0.1
+You are connected to the database: movies_db
+-----------------------------------------------
+
+Created collections movies and ratings (with $jsonSchema validators)
+
+Inserted 45,433 movies in 26 s
+-------------------------------------------  ---------------
+Movies                                       45,433
+Movies with credits / keywords               45,432 / 45,432
+Movies with at least one MovieLens id        45,433
+Credits rows without a movie (not inserted)  0
+Keyword rows without a movie (not inserted)  0
+-------------------------------------------  ---------------
+   5,000,000 ratings inserted (28 s)
+  10,000,000 ratings inserted (56 s)
+  15,000,000 ratings inserted (86 s)
+  20,000,000 ratings inserted (117 s)
+  25,000,000 ratings inserted (147 s)
+
+Inserted ratings in 2.6 minutes
+Step                                 Count
+-----------------------------------  ----------
+Ratings inserted                     26,024,289
+Linked to a movie                    25,981,582
+movie_id null: no tmdbId             13,503
+movie_id null: tmdbId not in movies  29,204
+
+Created indexes in 31 s
+
+Documents per collection:
+Collection    Documents      Avg. bytes    Data MB    Storage MB  Indexes
+------------  -----------  ------------  ---------  ------------  ---------------------------
+movies        45,433               3292      149.6          74.2  _id_, overview_tagline_text
+ratings       26,024,289            100     2628.3         773    _id_, user_movielens_unique
+
+db.movies.find_one({'_id': 862}) with cast, crew and keywords cut to the first entries:
+{'_id': 862,
+ 'imdb_id': 'tt0114709',
+ 'title': 'Toy Story',
+ 'original_title': 'Toy Story',
+ 'original_language': 'en',
+ 'overview': "Led by Woody, Andy's toys live happily in his room until Andy's "
+             'birthday brings Buzz Lightyear onto the scene. Afraid of losing '
+             "his place in Andy's heart, Woody plots against Buzz. But when "
+             'circumstances separate Buzz and Woody from their owner, the duo '
+             'eventually learns to put aside their differences.',
+ 'tagline': None,
+ 'status': 'Released',
+ 'release_date': datetime.datetime(1995, 10, 30, 0, 0),
+ 'runtime': 81,
+ 'budget': 30000000,
+ 'revenue': 373554033,
+ 'vote_average': 7.7,
+ 'vote_count': 5415,
+ 'popularity': 21.946943,
+ 'adult': False,
+ 'video': False,
+ 'homepage': 'http://toystory.disney.com/toy-story',
+ 'genres': ['Animation', 'Comedy', 'Family'],
+ 'belongs_to_collection': {'id': 10194, 'name': 'Toy Story Collection'},
+ 'production_companies': [{'id': 3, 'name': 'Pixar Animation Studios'}],
+ 'production_countries': [{'iso_3166_1': 'US',
+                           'name': 'United States of America'}],
+ 'spoken_languages': [{'iso_639_1': 'en', 'name': 'English'}],
+ 'keywords': ['jealousy', 'toy', 'boy', 'friendship'],
+ 'cast': [{'id': 31,
+           'name': 'Tom Hanks',
+           'character': 'Woody (voice)',
+           'gender': 'male',
+           'order': 0},
+          {'id': 12898,
+           'name': 'Tim Allen',
+           'character': 'Buzz Lightyear (voice)',
+           'gender': 'male',
+           'order': 1}],
+ 'crew': [{'id': 7879,
+           'name': 'John Lasseter',
+           'job': 'Director',
+           'department': 'Directing',
+           'gender': 'male'},
+          {'id': 12891,
+           'name': 'Joss Whedon',
+           'job': 'Screenplay',
+           'department': 'Writing',
+           'gender': 'male'}],
+ 'movielens_ids': [1]}
+
+A repaired movie with unknown values (null), db.movies.find_one({'_id': 82663}):
+{'_id': 82663,
+ 'imdb_id': 'tt0113002',
+ 'title': 'Midnight Man',
+ 'original_title': 'Midnight Man',
+ 'original_language': 'en',
+ 'tagline': None,
+ 'status': 'Released',
+ 'release_date': datetime.datetime(1997, 8, 20, 0, 0),
+ 'runtime': 104,
+ 'budget': None,
+ 'revenue': None,
+ 'vote_average': 6.0,
+ 'vote_count': 1,
+ 'popularity': 0.065736,
+ 'adult': False,
+ 'video': False,
+ 'homepage': None,
+ 'genres': ['Action', 'Thriller', 'Drama'],
+ 'belongs_to_collection': None,
+ 'production_companies': [{'id': 11176, 'name': 'Carousel Productions'},
+                          {'id': 11602, 'name': 'Vision View Entertainment'},
+                          {'id': 29812,
+                           'name': 'Telescene Film Group Productions'}],
+ 'production_countries': [{'iso_3166_1': 'CA', 'name': 'Canada'},
+                          {'iso_3166_1': 'LU', 'name': 'Luxembourg'},
+                          {'iso_3166_1': 'GB', 'name': 'United Kingdom'},
+                          {'iso_3166_1': 'US',
+                           'name': 'United States of America'}],
+ 'spoken_languages': [{'iso_639_1': 'en', 'name': 'English'}],
+ 'keywords': ['undercover', 'soldier'],
+ 'cast': [{'id': 2879,
+           'name': 'Rob Lowe',
+           'character': 'Sean Dillon',
+           'gender': 'male',
+           'order': 0}],
+ 'crew': [{'id': 43673,
+           'name': 'Tom Reeve',
+           'job': 'Supervisor of Production Resources',
+           'department': 'Crew',
+           'gender': 'male'}],
+ 'movielens_ids': [97919]}
+
+db.ratings.find_one({'user_id': 1}):
+{'_id': ObjectId('6ade7f8482a8553275cb79e2'),
+ 'user_id': 1,
+ 'movie_id': 197,
+ 'movielens_id': 110,
+ 'rating': 1.0,
+ 'rated_at': datetime.datetime(2015, 3, 9, 22, 52, 9)}
+
+-----------------------------------------------
+Connection to movies_db-db is closed

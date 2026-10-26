@@ -1,0 +1,412 @@
+
+==============================================================================
+1. Files
+==============================================================================
+File                    MB  CSV rows      Columns  Column names
+-------------------  -----  ----------  ---------  ---------------------------------------------
+movies_metadata.csv   34.4  45,466             24  adult, belongs_to_collection, budget, genres,
+                                                   homepage, id, imdb_id, original_language,
+                                                   original_title, overview, popularity,
+                                                   poster_path, production_companies,
+                                                   production_countries, release_date, revenue,
+                                                   runtime, spoken_languages, status, tagline,
+                                                   title, video, vote_average, vote_count
+credits.csv          189.9  45,476              3  cast, crew, id
+keywords.csv           6.2  46,419              2  id, keywords
+links.csv              1    45,843              3  movieId, imdbId, tmdbId
+links_small.csv        0.2  9,125               3  movieId, imdbId, tmdbId
+ratings.csv          709.6  26,024,289          4  userId, movieId, rating, timestamp
+ratings_small.csv      2.4  100,004             4  userId, movieId, rating, timestamp
+
+==============================================================================
+2. movies_metadata.csv - rows split by a line break in the overview
+==============================================================================
+  Fields in CSV row  Rows
+-------------------  ------
+                 10  3
+                 15  3
+                 24  45,460
+
+The 15-field rows read with the 24 column names (all columns are shifted):
+id          adult                          genres                                              original_language
+----------  -----------------------------  ------------------------------------------------  -------------------
+1997-08-20  - Written by Ørnås             [{'name': 'Carousel Productions', 'id': 11176},                   104
+2012-09-29  Rune Balot goes to a casino c  [{'name': 'Aniplex', 'id': 2883}, {'name': 'GoHa                   68
+2014-01-01  Avalanche Sharks tells the st  [{'name': 'Odyssey Media', 'id': 17161}, {'name'                   82
+
+After joining each 10-field row with the 15-field row that follows it:
+    id  title                                release_date    genres
+------  -----------------------------------  --------------  -----------------------------------------
+ 82663  Midnight Man                         1997-08-20      Action, Thriller, Drama
+122662  Mardock Scramble: The Third Exhaust  2012-09-29      Animation, Science Fiction
+249260  Avalanche Sharks                     2014-01-01      TV Movie, Action, Horror, Science Fiction
+-> 3 movies repaired, 45,463 movie rows in total.
+
+==============================================================================
+3. movies_metadata.csv - duplicate ids
+==============================================================================
+--------------------------------------  ------
+Movie rows                              45,463
+Unique ids                              45,433
+Ids that occur more than once           29
+Extra (duplicate) rows                  30
+Duplicate groups that are exact copies  16
+Groups where popularity differs         13
+Groups where vote_count differs         2
+--------------------------------------  ------
+
+Examples of copies that differ (kept = highest vote_count, the first one on ties):
+id      title                          vote_count    popularity    Decision
+------  -----------------------------  ------------  ------------  ----------
+132641  Wife                           0             0.096079      kept
+132641  Wife                           0             0.619388      dropped
+22649   A Farewell to Arms             29            1.914697      kept
+22649   A Farewell to Arms             29            2.411191      dropped
+84198   A Place at the Table           7             0.501046      kept
+84198   A Place at the Table           7             1.673307      dropped
+10991   Pokémon: Spell of the Unknown  143           10.264597     dropped
+10991   Pokémon: Spell of the Unknown  144           6.480376      kept
+-> 45,433 unique movies are inserted.
+
+==============================================================================
+4. movies_metadata.csv - missing values per column (after repair and deduplication)
+==============================================================================
+Column                 Empty    0 / [] / placeholder    Stored as None or []    Share
+---------------------  -------  ----------------------  ----------------------  -------
+adult                  0        0                       0                       0.0 %
+belongs_to_collection  40,945   0                       40,945                  90.1 %
+budget                 0        36,553                  36,797                  81.0 %
+genres                 0        2,442                   2,442                   5.4 %
+homepage               37,659   0                       37,659                  82.9 %
+id                     0        0                       0                       0.0 %
+imdb_id                17       0                       17                      0.0 %
+original_language      11       0                       11                      0.0 %
+original_title         0        0                       0                       0.0 %
+overview               959      142                     1,101                   2.4 %
+popularity             0        0                       0                       0.0 %
+poster_path            383      0                       -
+production_companies   0        11,868                  11,868                  26.1 %
+production_countries   0        6,279                   6,279                   13.8 %
+release_date           84       0                       84                      0.2 %
+revenue                0        38,035                  38,189                  84.1 %
+runtime                257      1,558                   1,815                   4.0 %
+spoken_languages       0        3,827                   3,827                   8.4 %
+status                 81       0                       81                      0.2 %
+tagline                25,032   0                       25,032                  55.1 %
+title                  0        0                       0                       0.0 %
+video                  0        0                       0                       0.0 %
+vote_average           0        2,995                   2,995                   6.6 %
+vote_count             0        2,896                   0 kept
+budget/revenue: also None when below 1000 USD. vote_average: None when 0 (no votes or 0 with votes).
+poster_path is not stored. Placeholders: No Overview, No overview found., No overview yet.
+
+==============================================================================
+5. movies_metadata.csv - numeric attributes (known values after cleaning)
+==============================================================================
+Attribute     Known    min    p25        median      p75         max            mean
+------------  -------  -----  ---------  ----------  ----------  -------------  ----------
+budget        8,636    1,000  2,200,000  9,000,000   26,000,000  380,000,000    22,224,860
+revenue       7,244    1,081  2,955,039  17,693,675  69,411,370  2,787,965,087  70,320,445
+runtime       43,618   1      86         95          107         1,256          97
+vote_average  42,438   0.5    5.3        6.1         6.9         10.0           6.0
+vote_count    45,433   0      3          10          34          14,075         110
+popularity    45,433   0.00   0.39       1.13        3.68        547.49         2.92
+budget/revenue in USD, runtime in minutes. vote_count includes the movies with 0 votes.
+
+==============================================================================
+6. movies_metadata.csv - suspicious values
+==============================================================================
+--------------------------------------  -----
+Budget > 0 but below 1,000 USD          244
+Revenue > 0 but below 1,000 USD         154
+Budget 1,000 to 9,999 USD (kept)         54
+Revenue 1,000 to 9,999 USD (kept)        83
+vote_average 0 although vote_count > 0   99
+vote_average 0 with only 1 vote          81
+Lowest vote_average above 0               0.5
+Runtime above 6 hours (kept)             67
+Movies marked adult                       9
+--------------------------------------  -----
+
+Tiny budgets/revenues, the most voted movies (set to None, i.e. unknown):
+title                           year    budget    revenue    vote_count
+------------------------------  ------  --------  ---------  ------------
+Modern Times                    1936    1         8500000    881
+Ong-Bak: The Thai Warrior       2003    0         15         556
+Irreversible                    2002    0         792        550
+Death at a Funeral              2007    9000000   46         508
+The Karate Kid, Part II         1986    113       115103979  457
+I Spit on Your Grave 2          2013    0         809        281
+2:22                            2017    0         422        277
+Dr. Horrible's Sing-Along Blog  2008    200000    3          236
+
+Longest runtimes (mostly TV mini-series, kept):
+title                             year    runtime (min)
+------------------------------  ------  ---------------
+Centennial                        1978             1256
+Jazz                              2001             1140
+Baseball                          1994             1140
+Berlin Alexanderplatz             1980              931
+Heimat: A Chronicle of Germany    1984              925
+The Story of Film: An Odyssey     2011              900
+
+==============================================================================
+7. movies_metadata.csv - categorical attributes
+==============================================================================
+status           Movies    Share
+---------------  --------  -------
+Released         44,988    99.02 %
+Rumored          229       0.50 %
+Post Production  98        0.22 %
+(missing)        81        0.18 %
+In Production    20        0.04 %
+Planned          15        0.03 %
+Canceled         2         0.00 %
+
+original_language: 89 distinct codes. The 10 most common:
+original_language    Movies    Share
+-------------------  --------  -------
+en                   32,251    71.0 %
+fr                   2,436     5.4 %
+it                   1,529     3.4 %
+ja                   1,347     3.0 %
+de                   1,079     2.4 %
+es                   994       2.2 %
+ru                   826       1.8 %
+hi                   508       1.1 %
+ko                   444       1.0 %
+zh                   409       0.9 %
+Missing original_language: 11
+
+Flag      Movies with True
+------  ------------------
+adult                    9
+video                   93
+
+==============================================================================
+8. movies_metadata.csv - release_date
+==============================================================================
+---------------------------------------------------  ----------
+Movies with release_date                             45,349
+Missing release_date                                 84
+Earliest                                             1874-12-09
+Latest                                               2020-12-16
+Release date after the last rating (2017-08-04)      31
+Release date after the last rating, status Released  17
+---------------------------------------------------  ----------
+
+Decade    Movies
+--------  --------
+1870s     2
+1880s     4
+1890s     75
+1900s     87
+1910s     176
+1920s     431
+1930s     1,315
+1940s     1,493
+1950s     2,079
+1960s     2,621
+1970s     3,471
+1980s     3,928
+1990s     5,676
+2000s     11,195
+2010s     12,795
+2020s     1
+
+==============================================================================
+9. movies_metadata.csv - genres
+==============================================================================
+20 distinct genres (after repairing the split rows):
+Genre            Movies    Share    As first genre
+---------------  --------  -------  ----------------
+Drama            20,244    44.6 %   11,953
+Comedy           13,176    29.0 %   8,816
+Thriller         7,619     16.8 %   1,663
+Romance          6,730     14.8 %   1,191
+Action           6,592     14.5 %   4,487
+Horror           4,671     10.3 %   2,619
+Crime            4,304     9.5 %    1,684
+Documentary      3,930     8.7 %    3,413
+Adventure        3,490     7.7 %    1,509
+Science Fiction  3,044     6.7 %    647
+Family           2,767     6.1 %    524
+Mystery          2,464     5.4 %    554
+Fantasy          2,309     5.1 %    703
+Animation        1,931     4.3 %    1,124
+Foreign          1,619     3.6 %    118
+Music            1,597     3.5 %    487
+History          1,398     3.1 %    279
+War              1,322     2.9 %    379
+Western          1,042     2.3 %    451
+TV Movie         766       1.7 %    390
+
+Genres per movie    Movies
+------------------  --------
+0                   2,442
+1                   14,552
+2                   14,471
+3                   9,578
+4                   3,377
+5+                  1,013
+
+==============================================================================
+10. movies_metadata.csv - belongs_to_collection
+==============================================================================
+--------------------------------------  -----
+Movies in a collection                  4,488
+Distinct collections                    1,695
+Collections with >= 3 movies            628
+Collection ids with more than one name  0
+--------------------------------------  -----
+
+Movies in collection      Collections
+----------------------  -------------
+1                                 390
+2                                 677
+3-5                               526
+6-10                               83
+> 10                               19
+
+Largest collections:
+Collection                       Movies
+-----------------------------  --------
+The Bowery Boys                      29
+Totò Collection                      27
+James Bond Collection                26
+Zatôichi: The Blind Swordsman        26
+The Carry On Collection              25
+
+==============================================================================
+11. movies_metadata.csv - production companies, countries and spoken languages
+==============================================================================
+Column                Distinct    Empty list    Share    Most common
+--------------------  ----------  ------------  -------  -----------------------------------------------
+production_companies  23,538      11,868        26.1 %   Warner Bros. (1,250), Metro-Goldwyn-Mayer (MGM)
+                                                         (1,074), Paramount Pictures (1,001)
+production_countries  161         6,279         13.8 %   US (21,142), GB (4,092), FR (3,932)
+spoken_languages      133         3,827         8.4 %    en (28,729), fr (4,193), de (2,624)
+
+-----------------------------------------------  --------------------------------------------------
+Movies with United States as production country  21,142
+United States and original_language not 'en'     452
+Company names containing 'United States'         United States Pictures (7), United States Navy (1)
+-----------------------------------------------  --------------------------------------------------
+-> Companies have only id and name, no country.
+
+==============================================================================
+12. credits.csv - rows and duplicates
+==============================================================================
+-------------------------------------------------------  ------
+Rows                                                     45,476
+Unique movie ids                                         45,432
+Ids that occur more than once                            43
+Extra (duplicate) rows                                   44
+Duplicate groups that are exact copies                   36
+Duplicate groups with the same cast                      43
+Duplicate groups with the same crew members (credit_id)  43
+Credits for movie ids not in movies_metadata             0
+Movies without a credits row                             1
+-------------------------------------------------------  ------
+
+==============================================================================
+13. credits.csv - cast and crew (after deduplication)
+==============================================================================
+-------------------------------------  ------------------
+Movies with empty cast                 2,415
+Movies with empty crew                 772
+Cast entries / median / max per movie  562,044 / 10 / 313
+Crew entries / median / max per movie  463,836 / 6 / 435
+-------------------------------------  ------------------
+
+Gender (TMDB code 0 = not set, stored as None):
+                   Entries    female    male    unknown
+-----------------  ---------  --------  ------  ---------
+All cast entries   562,044    19.9 %    40.3 %  39.8 %
+Top-5 billed cast  202,303    25.5 %    46.0 %  28.5 %
+Crew entries       463,836    6.7 %     34.6 %  58.6 %
+
+--------------------------------------------  --------------------
+Cast order consecutive 0..n-1                 33,991
+Cast order gaps or other start                11,355
+Cast order duplicate order values             87
+Movies where an actor has more than one role  951
+Movies without a Director in the crew         888
+Movies with 1 / 2 / 3+ directors              41,350 / 2,714 / 481
+Movies where a director is also in the cast   3,754
+--------------------------------------------  --------------------
+
+--------------------------------------  -----------------------------------------------------------------------
+Distinct actors (person ids)            206,158
+Distinct actor names                    202,747
+Names used by more than one person id   3,053
+Examples                                Varvara Dvalishvili (7 ids), Colin Campbell (6 ids), Sam Harris (6 ids)
+Distinct actor pairs per movie, summed  6,487,453
+--------------------------------------  -----------------------------------------------------------------------
+-> People are identified by their TMDB person id, the name is only used for display.
+
+==============================================================================
+14. keywords.csv
+==============================================================================
+----------------------------------------------  -------
+Rows                                            46,419
+Unique movie ids                                45,432
+Extra (duplicate) rows                          987
+Duplicate groups that are not exact copies      0
+Keyword rows for ids not in movies_metadata     0
+Movies without keywords (empty list or no row)  14,341
+Keywords per movie: median / max                2 / 149
+Distinct keywords                               19,956
+Movies with keyword 'film noir' or 'neo-noir'   398
+Noir keyword and 'noir' in overview or tagline  18
+----------------------------------------------  -------
+
+Most common keywords: woman director (3,039), independent film (1,914), murder (1,285), based on novel (822), musical (726), sex (679), violence (647), nudity (629)
+
+==============================================================================
+15. links.csv / links_small.csv
+==============================================================================
+File             MovieLens ids      Empty tmdbId    tmdbId not in movies    tmdbIds with > 1 MovieLens id
+---------------  ---------------  --------------  ----------------------  -------------------------------
+links.csv        45,843                      219                     161                               29
+links_small.csv  9,125                        13                      30                                0
+MovieLens ids in links_small.csv but not in links.csv: 10. Ids in both with a different tmdbId: 0.
+
+==============================================================================
+16. ratings.csv (the full file with 26 million ratings)
+==============================================================================
+-------------------------------------------  -----------------------------------------
+Ratings                                      26,024,289
+Users                                        270,896
+Rated MovieLens movies                       45,115
+First / last rating (UTC)                    1995-01-09 11:46:44 / 2017-08-04 06:57:50
+Ratings per user: min / median / mean / max  1 / 30 / 96.1 / 18,276
+Users with >= 20 ratings                     166,444
+Users with 1 rating                          5,084
+Ratings per movie: median / max              8 / 91,921
+-------------------------------------------  -----------------------------------------
+
+  Rating  Ratings    Share
+--------  ---------  -------
+     0.5  404,897    1.6 %
+     1    843,310    3.2 %
+     1.5  403,607    1.6 %
+     2    1,762,440  6.8 %
+     2.5  1,255,358  4.8 %
+     3    5,256,722  20.2 %
+     3.5  3,116,213  12.0 %
+     4    6,998,802  26.9 %
+     4.5  2,170,441  8.3 %
+     5    3,812,499  14.6 %
+
+Link to movies                                          Ratings     Share
+------------------------------------------------------  ----------  -------
+Linked to a movie                                       25,981,582  99.84 %
+tmdbId not in movies_metadata                           29,204      0.11 %
+Movie has no tmdbId                                     13,503      0.05 %
+(Linked) same user and TMDB movie as an earlier rating  125         0.00 %
+(The data is sorted by user, so the same user rating one TMDB movie twice is found per user.)
+
+ratings_small.csv for comparison: 100,004 ratings, 671 users, 9,066 movies (not used).
+
+Figures written to report/figures/
