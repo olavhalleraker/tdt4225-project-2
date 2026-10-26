@@ -22,8 +22,7 @@
    docker run --name tdt4225-a3-mongo -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=<root-password> -p 27017:27017 -d mongo:7.0.1 --wiredTigerCacheSizeGB 4
    ```
 
-2. Create the database user with read/write access to `movies_db` (step 8 of
-   the database setup in the assignment):
+2. Create the database user with read/write access to `movies_db`:
 
    ```bash
    docker exec tdt4225-a3-mongo mongosh -u admin -p <root-password> --authenticationDatabase admin --eval "db.getSiblingDB('movies_db').createUser({user: 'tdt4225', pwd: '<password>', roles: ['readWrite']})"
