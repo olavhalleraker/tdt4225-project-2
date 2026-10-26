@@ -1,9 +1,5 @@
 # TDT4225 Assignment 3 – The Movies Dataset in MongoDB
 
-Python programs that analyse, clean and load The Movies Dataset (Kaggle) into
-MongoDB 7.0.1, and answer the questions in Part 2. The report is in
-`report/report.md`.
-
 ## Folder structure
 
 | Path | Content |
