@@ -1,0 +1,560 @@
+Connected to MongoDB 7.0.1
+You are connected to the database: movies_db
+-----------------------------------------------
+
+
+==============================================================================
+Task 1: Considering only crew with job = Director, which 10 directors with >=
+5 movies have the highest median revenue? Also report each director's movie
+count and mean vote_average.
+==============================================================================
+First result document:
+{'_id': 11343,
+ 'director': 'David Yates',
+ 'movies': 10,
+ 'movies_with_revenue': 6,
+ 'mean_vote_average': 6.699999999999999,
+ 'median_revenue': 936085967.5}
+
+  rank  director_id    director            movies    movies_with_revenue    median_revenue    mean_vote_average
+------  -------------  ----------------  --------  ---------------------  ----------------  -------------------
+     1  11343          David Yates             10                      6       936,085,968                 6.70
+     2  108            Peter Jackson           14                     11       871,368,364                 7.12
+     3  1              George Lucas             7                      6       712,398,168                 6.81
+     4  7087           Brad Bird                6                      5       623,722,818                 7.15
+     5  10943          Francis Lawrence         6                      6       619,388,636                 6.80
+     6  18863          Eric Darnell             5                      5       532,680,671                 6.34
+     7  18864          Tom McGrath              5                      5       532,680,671                 6.40
+     8  5714           Carlos Saldanha          7                      5       500,188,435                 6.04
+     9  5524           Andrew Adamson           6                      5       484,409,218                 6.52
+    10  7879           John Lasseter           10                      5       461,983,149                 6.72
+
+Directors with >= 5 movies: 2,281, of these with >= 5 known revenues: 382
+[task 1 took 0.7 s]
+
+==============================================================================
+Task 2: List actor pairs that have co-starred in >= 3 movies together, their
+number of co-appearances, and their average movie vote_average. Sort by number
+of co-appearances.
+==============================================================================
+Actor pairs with >= 3 movies together: 45,650
+
+First result document:
+{'_id': {'actor_1_id': 33024, 'actor_2_id': 89989},
+ 'actor_1': 'Huntz Hall',
+ 'actor_2': 'Leo Gorcey',
+ 'co_appearances': 35,
+ 'avg_vote_average': 6.3549999999999995}
+
+Top 30 by co-appearances (ties by average vote_average):
+  rank  actor_1_id    actor_1           actor_2_id    actor_2            co_appearances    avg_vote_average
+------  ------------  ----------------  ------------  ---------------  ----------------  ------------------
+     1  33024         Huntz Hall        89989         Leo Gorcey                     35                6.35
+     2  13848         Charlie Chaplin   21301         Edna Purviance                 33                6.46
+     3  78057         Oliver Hardy      89670         Stan Laurel                    31                6.35
+     4  29642         Lou Costello      30111         Bud Abbott                     27                6.47
+     5  34982         Jeff Bennett      43125         Rob Paulsen                    27                6.23
+     6  15761         Grey Griffin      15831         Frank Welker                   25                6.71
+     7  7685          Raymond Burr      109701        Barbara Hale                   25                5.93
+     8  4165          John Wayne        8496          Paul Fix                       24                5.85
+     9  12077         Jim Cummings      15831         Frank Welker                   21                6.55
+    10  133277        Frank Mayo        980330        Jack Mower                     21                6.28
+    11  12077         Jim Cummings      34982         Jeff Bennett                   21                6.27
+    12  15831         Frank Welker      34982         Jeff Bennett                   21                6.23
+    13  5             Peter Cushing     113           Christopher Lee                21                5.99
+    14  14034         Bernard Gorcey    89989         Leo Gorcey                     20                7.00
+    15  13848         Charlie Chaplin   14438         Henry Bergman                  20                6.98
+    16  7450          Toshirō Mifune    7453          Takashi Shimura                19                7.48
+    17  14034         Bernard Gorcey    33024         Huntz Hall                     19                7.11
+    18  8635          Buster Keaton     10525         Joe Roberts                    19                6.88
+    19  62410         Sammo Hung        62414         Yuen Biao                      19                6.83
+    20  18897         Jackie Chan       62414         Yuen Biao                      19                6.80
+    21  13848         Charlie Chaplin   21310         John Rand                      19                6.75
+    22  20519         Simon Yam         25251         Lam Suet                       19                6.10
+    23  68527         William R. Moses  109701        Barbara Hale                   19                6.05
+    24  13848         Charlie Chaplin   21306         Albert Austin                  18                6.74
+    25  40941         Kenneth Williams  40944         Charles Hawtrey                18                6.39
+    26  19292         Adam Sandler      20818         Allen Covert                   18                5.64
+    27  121323        Bess Flowers      171111        Harold Miller                  17                6.96
+    28  383           Michael Palin     8930          John Cleese                    17                6.85
+    29  18897         Jackie Chan       62410         Sammo Hung                     17                6.84
+    30  15831         Frank Welker      86314         Mindy Cohn                     17                6.66
+(all 45,650 rows written to output/task2_actor_pairs.csv)
+[task 2 took 30.8 s]
+
+==============================================================================
+Task 3: List the top 10 actors (with >= 10 credited movies) that have the
+widest genre breadth. Report the actor, the number of distinct genres they've
+appeared in, and up to 5 example genres.
+==============================================================================
+Actors with >= 10 credited movies: 10,405. Of these, 22 have all 20 genres and 60 have 19.
+
+First result document:
+{'_id': 1926,
+ 'actor': 'Eddie Izzard',
+ 'credited_movies': 43,
+ 'distinct_genres': 20,
+ 'example_genres': [{'genre': 'Comedy', 'movies': 19},
+                    {'genre': 'Drama', 'movies': 15},
+                    {'genre': 'Thriller', 'movies': 9},
+                    {'genre': 'Family', 'movies': 7},
+                    {'genre': 'Adventure', 'movies': 6}]}
+
+Top 10 by distinct genres (ties: fewer credited movies first). Example genres = the actor's
+5 most common genres, with the number of the actor's movies in that genre:
+  rank  actor_id    actor              credited_movies    distinct_genres  example_genres
+------  ----------  ---------------  -----------------  -----------------  -------------------------------------------------------------------
+     1  1926        Eddie Izzard                    43                 20  Comedy (19), Drama (15), Thriller (9), Family (7), Adventure (6)
+     2  11998       Eddie Albert                    50                 20  Drama (25), Comedy (17), Romance (11), Action (7), Adventure (6)
+     3  378         Jonathan Pryce                  55                 20  Drama (25), Comedy (15), Action (13), Adventure (11), Thriller (11)
+     4  825         Stacy Keach                     59                 20  Drama (28), Action (13), Comedy (13), Thriller (13), Adventure (10)
+     5  9191        Timothy Spall                   59                 20  Drama (37), Comedy (15), Fantasy (13), Family (12), Adventure (11)
+     6  2222        Beau Bridges                    60                 20  Drama (38), Comedy (19), Action (13), Romance (11), Adventure (9)
+     7  141         David Carradine                 60                 20  Action (28), Drama (21), Thriller (17), Comedy (16), Adventure (10)
+     8  2440        Bill Nighy                      61                 20  Comedy (29), Drama (29), Action (16), Family (13), Adventure (12)
+     9  1954        Billy Zane                      64                 20  Drama (31), Thriller (24), Action (21), Comedy (18), Horror (12)
+    10  147         Michael Madsen                  65                 20  Thriller (31), Drama (27), Action (26), Crime (14), Horror (12)
+[task 3 took 2.0 s]
+
+==============================================================================
+Task 4: For film collections (belongs_to_collection.name not null) with >= 3
+movies, which 10 collections have the largest total revenue? For each, report
+movie count, total revenue, median vote_average, and the earliest -> latest
+release date.
+==============================================================================
+First result document:
+{'_id': 1241,
+ 'collection': 'Harry Potter Collection',
+ 'movies': 8,
+ 'movies_with_revenue': 8,
+ 'total_revenue': 7707367425,
+ 'earliest_release': datetime.datetime(2001, 11, 16, 0, 0),
+ 'latest_release': datetime.datetime(2011, 7, 7, 0, 0),
+ 'median_vote_average': 7.5}
+
+  rank  collection                             movies    movies_with_revenue    total_revenue    median_vote_average  earliest -> latest release
+------  -----------------------------------  --------  ---------------------  ---------------  ---------------------  ----------------------------
+     1  Harry Potter Collection                     8                      8    7,707,367,425                   7.50  2001-11-16 -> 2011-07-07
+     2  Star Wars Collection                        8                      8    7,434,494,790                   7.45  1977-05-25 -> 2016-12-14
+     3  James Bond Collection                      26                     26    7,106,970,239                   6.30  1962-10-04 -> 2015-10-26
+     4  The Fast and the Furious Collection         8                      8    5,125,098,793                   6.65  2001-06-22 -> 2017-04-12
+     5  Pirates of the Caribbean Collection         5                      5    4,521,576,826                   6.90  2003-07-09 -> 2017-05-23
+     6  Transformers Collection                     5                      5    4,366,101,244                   6.10  2007-06-27 -> 2017-06-21
+     7  Despicable Me Collection                    6                      4    3,691,070,216                   6.90  2010-07-08 -> 2017-06-15
+     8  The Twilight Collection                     5                      5    3,342,107,290                   5.80  2008-11-20 -> 2012-11-13
+     9  Ice Age Collection                          5                      5    3,216,708,553                   6.50  2002-03-10 -> 2016-06-23
+    10  Jurassic Park Collection                    4                      4    3,031,484,143                   6.35  1993-06-11 -> 2015-06-09
+[task 4 took 0.0 s]
+
+==============================================================================
+Task 5: By decade and primary genre (first element in genres), what is the
+median runtime and movie count? List results sorted by decade then median
+runtime (desc).
+==============================================================================
+Movies with release date, runtime and at least one genre: 41,694, in 231 (decade, genre) groups.
+
+First result document:
+{'movies': 2,
+ 'decade': 1870,
+ 'primary_genre': 'Documentary',
+ 'median_runtime': 1.0}
+
+decade    primary_genre      movies    median_runtime
+--------  ---------------  --------  ----------------
+1870s     Documentary             2              1.00
+1880s     Documentary             4              1.00
+1890s     Fantasy                 8              1.50
+1890s     Documentary            27              1.00
+1890s     Comedy                  9              1.00
+1890s     Horror                  3              1.00
+1890s     Action                  2              1.00
+1890s     Drama                   2              1.00
+1890s     Family                  1              1.00
+1890s     History                 1              1.00
+1900s     History                 1             60.00
+1900s     Adventure               4             15.00
+1900s     Drama                   7             10.00
+1900s     Action                  2              9.00
+1900s     Thriller                1              8.00
+1900s     Science Fiction         2              5.50
+1900s     Fantasy                15              4.00
+1900s     Horror                  2              4.00
+1900s     Comedy                 17              3.00
+1900s     Music                   1              3.00
+1900s     Crime                   2              2.00
+1900s     Animation               1              2.00
+1900s     Documentary            12              1.00
+1900s     Romance                 2              1.00
+1910s     History                 2            109.00
+1910s     War                     2            108.00
+1910s     Mystery                 3             84.00
+1910s     Adventure               8             70.00
+1910s     Romance                 6             68.50
+1910s     Drama                  52             65.00
+1910s     Western                 4             60.50
+1910s     Crime                   7             59.00
+1910s     Family                  1             52.00
+1910s     Documentary             2             43.50
+1910s     Horror                  2             38.50
+1910s     Action                  1             29.00
+1910s     Comedy                 53             27.00
+1910s     Fantasy                 6             14.50
+1910s     Animation               5             12.00
+1920s     Science Fiction         1            120.00
+1920s     Music                   2            114.00
+1920s     War                     4            106.00
+1920s     History                 4            105.50
+1920s     Adventure              21            100.00
+1920s     Thriller                4             93.50
+1920s     Action                 18             90.50
+1920s     Drama                 164             90.00
+1920s     Western                10             88.50
+1920s     Romance                18             88.00
+1920s     Crime                  16             83.00
+1920s     Horror                  5             83.00
+1920s     Comedy                 92             67.00
+1920s     Documentary            18             67.00
+1920s     Fantasy                 4             66.00
+1920s     Mystery                 2             57.50
+1920s     Family                  2             37.00
+1920s     Animation              10              6.50
+1930s     Music                  32             94.50
+1930s     History                10             91.00
+1930s     Adventure              55             90.00
+1930s     Romance                79             86.00
+1930s     Drama                 382             85.00
+1930s     War                    13             85.00
+1930s     Comedy                349             82.00
+1930s     Western                21             81.00
+1930s     Science Fiction         5             80.00
+1930s     Thriller               10             79.00
+1930s     Family                  5             78.00
+1930s     Fantasy                 8             76.50
+1930s     Action                 80             76.00
+1930s     Crime                  92             74.00
+1930s     Mystery                38             70.00
+1930s     Horror                 28             68.00
+1930s     Documentary            14             63.00
+1930s     Animation              37              8.00
+1940s     Science Fiction         1            220.00
+1940s     History                11            107.00
+1940s     Adventure              44             98.50
+1940s     Drama                 466             98.00
+1940s     Action                 88             93.50
+1940s     Music                  35             92.00
+1940s     Romance                52             91.50
+1940s     War                    41             91.00
+1940s     Comedy                323             90.00
+1940s     Crime                 135             86.00
+1940s     Thriller               47             86.00
+1940s     Western                40             86.00
+1940s     Family                  8             86.00
+1940s     Fantasy                23             85.00
+1940s     Mystery                41             71.00
+1940s     Horror                 27             67.00
+1940s     Documentary            20             55.00
+1940s     Animation              34              8.00
+1950s     Music                  34            101.00
+1950s     Drama                 627             98.00
+1950s     History                17             97.00
+1950s     War                    46             96.00
+1950s     Romance                76             95.00
+1950s     Comedy                330             93.00
+1950s     Action                166             93.00
+1950s     Adventure             100             93.00
+1950s     Mystery                22             91.50
+1950s     Family                 12             88.50
+1950s     Thriller               46             87.50
+1950s     Crime                 170             86.00
+1950s     Western               109             84.00
+1950s     Fantasy                21             79.00
+1950s     Horror                 79             78.00
+1950s     Science Fiction        50             78.00
+1950s     Documentary            32             33.00
+1950s     Animation              27              7.00
+1960s     War                    50            112.50
+1960s     TV Movie                5            112.00
+1960s     History                24            110.00
+1960s     Drama                 714            102.00
+1960s     Romance                75            102.00
+1960s     Mystery                36            101.50
+1960s     Crime                 104            100.50
+1960s     Action                247            100.00
+1960s     Music                  28            100.00
+1960s     Western                96             98.50
+1960s     Comedy                480             98.00
+1960s     Adventure             138             97.00
+1960s     Thriller               54             96.50
+1960s     Foreign                10             91.50
+1960s     Fantasy                30             91.00
+1960s     Horror                146             87.00
+1960s     Science Fiction        57             85.00
+1960s     Documentary            77             80.00
+1960s     Family                 20             80.00
+1960s     Animation              36             25.00
+1970s     History                22            120.00
+1970s     War                    35            107.00
+1970s     Romance                59            103.00
+1970s     Drama                 861            102.00
+1970s     Crime                 150            100.00
+1970s     Mystery                56             99.50
+1970s     Action                455             98.00
+1970s     Thriller              126             98.00
+1970s     Adventure             123             98.00
+1970s     Music                  33             98.00
+1970s     Foreign                20             96.50
+1970s     Comedy                492             96.00
+1970s     Western                88             96.00
+1970s     Fantasy                47             94.00
+1970s     Science Fiction        47             94.00
+1970s     Horror                320             91.00
+1970s     Family                 39             90.00
+1970s     TV Movie               28             87.50
+1970s     Documentary           136             86.00
+1970s     Animation              57             38.00
+1980s     War                    31            120.00
+1980s     Drama                 840            105.00
+1980s     Crime                 132            102.00
+1980s     TV Movie               29            102.00
+1980s     Adventure             168            101.00
+1980s     History                17            100.00
+1980s     Action                493             98.00
+1980s     Thriller               85             98.00
+1980s     Romance                68             98.00
+1980s     Mystery                38             97.00
+1980s     Western                10             97.00
+1980s     Comedy                823             96.00
+1980s     Science Fiction        81             95.00
+1980s     Music                  39             94.00
+1980s     Fantasy                90             93.50
+1980s     Horror                379             91.00
+1980s     Family                 42             90.00
+1980s     Foreign                 7             89.00
+1980s     Documentary           124             84.00
+1980s     Animation             113             70.00
+1990s     War                    23            115.00
+1990s     History                33            111.00
+1990s     Drama               1,427            105.00
+1990s     Crime                 179            105.00
+1990s     Western                21            102.00
+1990s     Foreign                16            100.50
+1990s     Mystery                56            100.00
+1990s     Thriller              163             99.00
+1990s     Romance               141             99.00
+1990s     Action                690             98.00
+1990s     Adventure             193             97.00
+1990s     Comedy              1,153             96.00
+1990s     Fantasy               132             96.00
+1990s     TV Movie               70             95.00
+1990s     Science Fiction        94             94.00
+1990s     Music                  58             94.00
+1990s     Horror                230             93.00
+1990s     Family                 75             90.00
+1990s     Documentary           246             86.50
+1990s     Animation             140             74.00
+2000s     War                    54            114.00
+2000s     History                46            110.50
+2000s     Drama               3,028            102.00
+2000s     Crime                 351            102.00
+2000s     Romance               201            102.00
+2000s     Adventure             335            100.00
+2000s     Action              1,135             98.00
+2000s     Thriller              313             98.00
+2000s     Fantasy               167             98.00
+2000s     Music                  93             98.00
+2000s     Foreign                33             98.00
+2000s     Western                16             98.00
+2000s     Mystery                99             96.00
+2000s     Comedy              2,157             95.00
+2000s     Science Fiction       111             92.00
+2000s     Horror                590             91.00
+2000s     Family                105             90.00
+2000s     TV Movie              100             90.00
+2000s     Documentary           995             88.00
+2000s     Animation             322             76.00
+2010s     History                81            105.00
+2010s     Crime                 309            103.00
+2010s     Drama               3,082            100.00
+2010s     Action              1,025            100.00
+2010s     War                    72            100.00
+2010s     Romance               368             99.00
+2010s     Music                 117             99.00
+2010s     Western                28             98.50
+2010s     Adventure             297             97.00
+2010s     Foreign                26             96.50
+2010s     Mystery               152             95.50
+2010s     Thriller              744             95.00
+2010s     Comedy              2,143             93.00
+2010s     Fantasy               137             93.00
+2010s     Science Fiction       183             91.00
+2010s     Horror                762             90.00
+2010s     Family                189             90.00
+2010s     Documentary         1,562             88.50
+2010s     TV Movie              138             86.50
+2010s     Animation             323             80.00
+(all 231 rows written to output/task5_runtime_by_decade_and_genre.csv)
+[task 5 took 0.1 s]
+
+==============================================================================
+Task 6: For each movie's top-billed 5 cast (by order), what is the proportion
+of female cast? Aggregate by decade and list decades sorted by average female
+proportion (desc), including movie counts used. Unknown gender may be ignored.
+==============================================================================
+First result document:
+{'_id': 1870, 'avg_female_proportion': 1.0, 'movies': 1}
+
+decade      avg_female_proportion    movies
+--------  -----------------------  --------
+1870s                      1.0000         1
+2020s                      0.8000         1
+1890s                      0.5000         2
+1900s                      0.4444        12
+2010s                      0.3763    10,543
+1930s                      0.3655     1,249
+2000s                      0.3616     9,647
+1940s                      0.3589     1,435
+1990s                      0.3375     5,179
+1910s                      0.3369       144
+1950s                      0.3365     1,998
+1920s                      0.3313       374
+1960s                      0.3251     2,395
+1980s                      0.3200     3,555
+1970s                      0.3111     3,145
+
+Movies used in total: 39,680
+[task 6 took 0.3 s]
+
+==============================================================================
+Task 7: Using a text search over overview and tagline, which 20 movies
+matching "noir" or "neo-noir" (and vote_count >= 50) have the highest
+vote_average? Return title, year, vote_average, and vote_count.
+==============================================================================
+Text search "noir": 60 movies, 5 of them with vote_count >= 50.
+(Searching "noir neo-noir" would add 43 movies where only "neo" matches, e.g. The Matrix Reloaded, The Matrix Revolutions, Akira.)
+
+First result document:
+{'title': 'The Bad Sleep Well',
+ 'vote_average': 7.7,
+ 'vote_count': 57,
+ 'year': 1960,
+ 'matched': 'noir'}
+
+  rank  title                    year      vote_average    vote_count  matched
+------  -----------------------  ------  --------------  ------------  ---------
+     1  The Bad Sleep Well       1960              7.70            57  noir
+     2  Drunken Angel            1948              7.70            54  noir
+     3  Elevator to the Gallows  1958              7.60            85  noir
+     4  Synchronicity            2015              5.70           114  noir
+     5  Frank & Lola             2016              5.70            51  noir
+[task 7 took 0.0 s]
+
+==============================================================================
+Task 8: Which 20 director-actor pairs with >= 3 collaborations (same movie)
+have the highest mean vote_average, considering only movies with vote_count >=
+100? Include the pair's films count and mean revenue.
+==============================================================================
+First result document:
+{'_id': {'director_id': 5026, 'actor_id': 106165},
+ 'director': 'Akira Kurosawa',
+ 'actor': 'Eijirô Tôno',
+ 'films': 3,
+ 'mean_vote_average': 8.133333333333333,
+ 'films_with_revenue': 1,
+ 'mean_revenue': 271841.0}
+
+  rank  director              actor               films    mean_vote_average    films_with_revenue    mean_revenue
+------  --------------------  ----------------  -------  -------------------  --------------------  --------------
+     1  Akira Kurosawa        Eijirô Tôno             3                 8.13                     1         271,841
+     2  Akira Kurosawa        Haruo Suzuki            3                 8.13                     1         271,841
+     3  Akira Kurosawa        Minoru Itô              3                 8.13                     1         271,841
+     4  Charlie Chaplin       Hank Mann               3                 8.13                     3       6,506,394
+     5  Akira Kurosawa        Atsushi Watanabe        3                 8.10                     2         163,540
+     6  Akira Kurosawa        Toranosuke Ogawa        3                 8.10                     2         163,540
+     7  Francis Ford Coppola  John Cazale             3                 8.10                     3      99,009,751
+     8  Quentin Tarantino     Harvey Keitel           3                 8.10                     3     182,573,606
+     9  Akira Kurosawa        Daisuke Katô            4                 8.07                     3         141,216
+    10  Akira Kurosawa        Ichirô Chiba            4                 8.07                     2         163,540
+    11  Akira Kurosawa        Noriko Honma            4                 8.07                     3         141,216
+    12  Francis Ford Coppola  Robert Duvall           4                 8.07                     4      96,622,408
+    13  Akira Kurosawa        Haruya Sakamoto         3                 8.07                     1         271,841
+    14  Akira Kurosawa        Shôichi Hirose          3                 8.07                     1         271,841
+    15  Akira Kurosawa        Susumu Fujita           3                 8.07                     0
+    16  Akira Kurosawa        Isao Kimura             4                 8.05                     2         163,540
+    17  Akira Kurosawa        Minoru Chiaki           6                 8.03                     3         141,216
+    18  Akira Kurosawa        Masao Shimizu           3                 8.03                     1          55,240
+    19  Akira Kurosawa        Yûnosuke Itô            3                 8.03                     1          55,240
+    20  Hayao Miyazaki        Tsunehiko Kamijô        3                 8.03                     2     217,150,202
+[task 8 took 0.4 s]
+
+==============================================================================
+Task 9: Among movies where original_language != "en" but at least one
+production company or country is United States, which are the top 10 original
+languages by count? For each language, report the count and one example title.
+==============================================================================
+Matching movies: 452 (0 only through a company name with 'United States').
+
+First result document:
+{'_id': 'fr',
+ 'movies': 112,
+ 'example_title': 'Leon: The Professional',
+ 'example_vote_count': 4293}
+
+  rank  original_language      movies  example_title                      example_vote_count
+------  -------------------  --------  -------------------------------  --------------------
+     1  fr                        112  Leon: The Professional                          4,293
+     2  es                         72  Pan's Labyrinth                                 3,122
+     3  it                         56  The Good, the Bad and the Ugly                  2,371
+     4  de                         51  Bagdad Cafe                                        76
+     5  ja                         31  Dragon Ball Z: Resurrection 'F'                   377
+     6  pt                         15  A Civil Action                                    113
+     7  xx                         14  Quest for Fire                                    111
+     8  nl                         12  Killer Party                                       12
+     9  ru                         11  Brother 2                                          39
+    10  zh                         11  Crouching Tiger, Hidden Dragon                    949
+[task 9 took 0.1 s]
+
+==============================================================================
+Task 10: For each user, what is their ratings count, population variance of
+ratings, and number of distinct genres rated? List the top 10 most genre-
+diverse users, and separately the top 10 highest-variance users (only users
+with >= 20 ratings).
+==============================================================================
+Statistics for 270,896 users written to the collection user_rating_stats (84 s).
+Users with >= 20 ratings: 166,444, of these with all 20 genres: 2,896
+
+First result document:
+{'_id': 12420, 'ratings': 53, 'variance': 0.560342, 'distinct_genres': 20}
+
+Top 10 most genre-diverse users (ties: fewer ratings first):
+  rank  user_id      ratings    variance    distinct_genres
+------  ---------  ---------  ----------  -----------------
+     1  12420             53      0.5603                 20
+     2  55755             55      2.3425                 20
+     3  238289            61      1.1516                 20
+     4  257021            62      2.5323                 20
+     5  73720             66      0.6451                 20
+     6  201607            67      0.9143                 20
+     7  202270            67      1.0956                 20
+     8  173031            70      1.8335                 20
+     9  12427             72      0.8233                 20
+    10  161691            73      0.4544                 20
+
+Users with >= 20 ratings at the highest possible variance 5.0625 (half 0.5, half 5.0): 6
+Top 10 highest-variance users (ties: more ratings first):
+  rank  user_id      ratings    variance    distinct_genres
+------  ---------  ---------  ----------  -----------------
+     1  167241            34      5.0625                 14
+     2  185889            26      5.0625                 14
+     3  18703             20      5.0625                 13
+     4  57842             20      5.0625                 14
+     5  83102             20      5.0625                 15
+     6  153882            20      5.0625                 15
+     7  15395             83      5.0618                 14
+     8  71009             27      5.0556                 13
+     9  179759            21      5.0510                 13
+    10  221535           120      5.0400                 19
+(all 270,896 rows written to output/task10_user_rating_stats.csv)
+[task 10 took 85.2 s]
+
+-----------------------------------------------
+Connection to movies_db-db is closed

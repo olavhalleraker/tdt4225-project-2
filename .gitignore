@@ -1,0 +1,8 @@
+/data/*
+!/data/.gitkeep
+__pycache__/
+.venv/
+.env
+.DS_Store
+
+/task-description/
