@@ -362,6 +362,8 @@ class MovieQueries:
                             "films_with_revenue": count_if({"$ne": ["$revenue", None]}),
                             "mean_revenue": {"$avg": "$revenue"}}},
                 {"$match": {"films": {"$gte": 3}}},
+                # rounded so that equal means are not ordered by floating-point noise
+                {"$set": {"mean_vote_average": {"$round": ["$mean_vote_average", 6]}}},
                 {"$sort": {"mean_vote_average": DESCENDING, "films": DESCENDING, "director": 1, "actor": 1}},
                 {"$limit": 20},
             ])
