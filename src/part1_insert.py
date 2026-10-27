@@ -98,9 +98,13 @@ class MovieInserter:
 
         print("\nInserted %s movies in %.0f s" % (f"{len(movies):,}", time.time() - started))
         print(tabulate([["Movies", f"{len(movies):,}"],
-                        ["Movies with credits / keywords",
+                        ["Movies with a credits / keywords row",
                          "%s / %s" % (f"{sum(1 for m in movies if m in credits):,}",
                                       f"{sum(1 for m in movies if m in keywords):,}")],
+                        ["Movies with non-empty cast / crew / keywords",
+                         "%s / %s / %s" % (f"{sum(1 for m in movies.values() if m['cast']):,}",
+                                           f"{sum(1 for m in movies.values() if m['crew']):,}",
+                                           f"{sum(1 for m in movies.values() if m['keywords']):,}")],
                         ["Movies with at least one MovieLens id", f"{len(movielens_ids):,}"],
                         ["Credits rows without a movie (not inserted)", len(set(credits) - set(movies))],
                         ["Keyword rows without a movie (not inserted)", len(set(keywords) - set(movies))]],
