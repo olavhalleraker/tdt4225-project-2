@@ -93,6 +93,9 @@ def build_movie(row):
     placeholder overviews. Nested columns keep only the fields that carry
     information (e.g. genre names, but not genre ids or poster paths)."""
     m = dict(zip(MOVIE_COLUMNS, row))
+    for flag in ("adult", "video"):
+        if m[flag] not in ("True", "False"):
+            raise ValueError("Movie %s: %s is %r, expected True or False" % (m["id"], flag, m[flag]))
     vote_count = int(float(m["vote_count"]))
     vote_average = float(m["vote_average"])
     runtime = int(float(m["runtime"] or 0))
