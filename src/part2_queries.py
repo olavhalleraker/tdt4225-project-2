@@ -321,8 +321,18 @@ class MovieQueries:
             len(noir_ids), self.db.movies.count_documents({**search, "vote_count": {"$gte": 50}})))
         also_neo = [m["title"] for m in self.db.movies.find({"$text": {"$search": "noir neo-noir"}}, {"title": 1})
                     .sort("vote_count", DESCENDING) if m["_id"] not in noir_ids]
-        print('(Searching "noir neo-noir" would add {} movies where only "neo" matches, e.g. {}.)\n'
+        print('(Searching "noir neo-noir" would add {} movies where only "neo" matches, e.g. {}.)'
               .format(len(also_neo), ", ".join(also_neo[:3])))
+        # Check without the text index that the small number of matches comes from
+        # the data and not from the index (the regex also matches e.g. "noirish")
+        word = {"$regex": r"\bnoir", "$options": "i"}
+        in_text = {"$or": [{"overview": word}, {"tagline": word}]}
+        voted = self.db.movies.count_documents({**in_text, "vote_count": {"$gte": 50}})
+        print('Cross-check with a regex instead of the text index: {:,} movies contain "noir" in overview or'
+              ' tagline, {:,} of them with vote_count >= 50.'.format(self.db.movies.count_documents(in_text), voted))
+        if voted < 20:
+            print("So fewer than 20 movies can be returned: few overviews/taglines use the word.")
+        print()
         print_first_document(rows)
         print_table([[rank, r["title"], r["year"], r["vote_average"], r["vote_count"], r["matched"]]
                      for rank, r in enumerate(rows, start=1)],
