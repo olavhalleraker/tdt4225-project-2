@@ -290,12 +290,14 @@ class MovieQueries:
             {"$group": {"_id": "$decade",
                         "avg_female_proportion": {"$avg": {"$divide": ["$female", "$known"]}},
                         "movies": {"$sum": 1}}},
-            {"$sort": {"avg_female_proportion": DESCENDING}},
+            {"$sort": {"avg_female_proportion": DESCENDING, "movies": DESCENDING}},
         ])
         print_first_document(rows)
         print_table([["%ds" % r["_id"], r["avg_female_proportion"], r["movies"]] for r in rows],
                     ["decade", "avg_female_proportion", "movies"], floatfmt=".4f")
         print("\nMovies used in total: {:,}".format(sum(r["movies"] for r in rows)))
+        print("avg_female_proportion is the mean of the per-movie proportions (female / known gender among")
+        print("the top 5). Decades with only a few movies (e.g. the 1870s, 1890s and 2020s) are not reliable.")
 
     def task7(self):
         """The 20 movies with the highest vote_average (vote_count >= 50) whose
