@@ -253,18 +253,24 @@ class MovieQueries:
         """Median runtime and movie count per decade and primary genre (the first
         element in genres), sorted by decade and then median runtime (desc)."""
         rows = self.aggregate("movies", [
-            {"$match": {"release_date": {"$ne": None}, "runtime": {"$ne": None}, "genres.0": {"$exists": True}}},
+            # Movies with unknown runtime are counted, but the median ignores them
+            {"$match": {"release_date": {"$ne": None}, "genres.0": {"$exists": True}}},
             {"$group": {"_id": {"decade": decade("$release_date"), "primary_genre": {"$arrayElemAt": ["$genres", 0]}},
                         "movies": {"$sum": 1},
+                        "movies_with_runtime": count_if({"$ne": ["$runtime", None]}),
                         "runtimes": {"$push": "$runtime"}}},
-            {"$project": {"_id": 0, "decade": "$_id.decade", "primary_genre": "$_id.primary_genre", "movies": 1,
+            {"$project": {"_id": 0, "decade": "$_id.decade", "primary_genre": "$_id.primary_genre",
+                          "movies": "$movies", "movies_with_runtime": "$movies_with_runtime",
                           "median_runtime": median("$runtimes")}},
             {"$sort": {"decade": 1, "median_runtime": DESCENDING, "movies": DESCENDING, "primary_genre": 1}},
         ])
-        headers = ["decade", "primary_genre", "movies", "median_runtime"]
-        table = [["%ds" % r["decade"], r["primary_genre"], r["movies"], r["median_runtime"]] for r in rows]
-        print("Movies with release date, runtime and at least one genre: {:,}, in {} (decade, genre) groups.\n"
-              .format(sum(r["movies"] for r in rows), len(rows)))
+        headers = ["decade", "primary_genre", "movies", "movies_with_runtime", "median_runtime"]
+        table = [["%ds" % r["decade"], r["primary_genre"], r["movies"], r["movies_with_runtime"], r["median_runtime"]]
+                 for r in rows]
+        print("Movies with release date and at least one genre: {:,} ({:,} with known runtime), in {} (decade, genre)"
+              " groups.".format(sum(r["movies"] for r in rows), sum(r["movies_with_runtime"] for r in rows), len(rows)))
+        print("Sorted by decade (ascending), then median runtime (descending). Groups with only a few movies")
+        print("(e.g. before 1910) give medians that say little.\n")
         print_first_document(rows)
         print_table(table, headers)
         save_csv("task5_runtime_by_decade_and_genre.csv", headers, table)
