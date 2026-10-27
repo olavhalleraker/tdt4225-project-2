@@ -89,6 +89,7 @@ class EDA:
         self.keywords_file()
         self.links_file()
         self.ratings_file()
+        self.missing_data_impact()
         self.figures()
 
     # ------------------------------------------------------------------ #
@@ -503,6 +504,70 @@ class EDA:
               % (f"{small_n:,}", len(small_users), f"{len(small_movies):,}"))
 
     # ------------------------------------------------------------------ #
+    def missing_data_impact(self):
+        heading("17. Impact of the missing values on the Part 2 tasks")
+        movies = list(self.movies.values())
+
+        def known_share(selected, key):
+            return "%.1f %%" % pct(sum(1 for m in selected if m[key] is not None), len(selected)) if selected else "-"
+
+        # Is missing budget/revenue spread evenly, or does it depend on age and country?
+        by_decade = defaultdict(list)
+        for m in movies:
+            if m["release_date"]:
+                by_decade[m["release_date"].year // 10 * 10].append(m)
+        rows = [["%ds" % d, f"{len(ms):,}", known_share(ms, "budget"), known_share(ms, "revenue"),
+                 known_share(ms, "runtime"), known_share(ms, "vote_average")] for d, ms in sorted(by_decade.items())]
+        us = [m for m in movies if any(c["iso_3166_1"] == "US" for c in m["production_countries"])]
+        not_us = [m for m in movies if not any(c["iso_3166_1"] == "US" for c in m["production_countries"])]
+        rows += [["US production", f"{len(us):,}", known_share(us, "budget"), known_share(us, "revenue"),
+                  known_share(us, "runtime"), known_share(us, "vote_average")],
+                 ["Not US", f"{len(not_us):,}", known_share(not_us, "budget"), known_share(not_us, "revenue"),
+                  known_share(not_us, "runtime"), known_share(not_us, "vote_average")]]
+        table(rows, ["Group", "Movies", "budget known", "revenue known", "runtime known", "vote_average known"])
+        print("-> Missing budget/revenue is not spread evenly over decades and countries (compare the rows),")
+        print("   so medians and totals of revenue (tasks 1, 4 and 8) mostly describe the movies where it is known.")
+
+        # How many candidates each task keeps when unknown values are left out
+        directed = defaultdict(set)
+        for movie_id, (_, crew) in self.credits.items():
+            if movie_id in self.movies:
+                for c in crew:
+                    if c["job"] == "Director":
+                        directed[c["id"]].add(movie_id)
+        with_revenue = {d: sum(1 for m in ms if self.movies[m]["revenue"] is not None) for d, ms in directed.items()}
+        collections = defaultdict(list)
+        for m in movies:
+            if m["belongs_to_collection"]:
+                collections[m["belongs_to_collection"]["id"]].append(m)
+        big = [ms for ms in collections.values() if len(ms) >= 3]
+        top5 = defaultdict(Counter)
+        for movie_id, (cast, _) in self.credits.items():
+            m = self.movies.get(movie_id)
+            if m and m["release_date"]:
+                for c in sorted(cast, key=lambda c: c["order"])[:5]:
+                    top5[m["release_date"].year // 10 * 10][c["gender"]] += 1
+        dated_with_genre = [m for m in movies if m["release_date"] and m["genres"]]
+        print()
+        table([["Task 1: directors with >= 5 movies", f"{sum(1 for ms in directed.values() if len(ms) >= 5):,}"],
+               ["Task 1: ... of these with >= 5 known revenues",
+                f"{sum(1 for d, ms in directed.items() if len(ms) >= 5 and with_revenue[d] >= 5):,}"],
+               ["Task 4: collections with >= 3 movies", f"{len(big):,}"],
+               ["Task 4: ... with all revenues known",
+                f"{sum(1 for ms in big if all(m['revenue'] is not None for m in ms)):,}"],
+               ["Task 4: ... with no revenue known",
+                f"{sum(1 for ms in big if all(m['revenue'] is None for m in ms)):,}"],
+               ["Task 5: movies with date and genre but unknown runtime",
+                f"{sum(1 for m in dated_with_genre if m['runtime'] is None):,}"],
+               ["Task 7/8: movies with vote_count >= 50 / >= 100",
+                "%s / %s" % (f"{sum(1 for m in movies if m['vote_count'] >= 50):,}",
+                             f"{sum(1 for m in movies if m['vote_count'] >= 100):,}")]])
+        print("\nTask 6: share of the top-5 billed cast with unknown gender, per decade:")
+        table([["%ds" % d, f"{sum(c.values()):,}", "%.1f %%" % pct(c[None], sum(c.values()))]
+               for d, c in sorted(top5.items())], ["Decade", "Top-5 cast entries", "Unknown gender"])
+        print("-> Unknown gender is ignored in task 6. Where the share is high, the female proportion is")
+        print("   based on fewer people per movie.")
+
     def figures(self):
         os.makedirs(FIGURE_DIR, exist_ok=True)
         plt.rcParams.update({
