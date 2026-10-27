@@ -246,6 +246,8 @@ class MovieQueries:
                      for rank, r in enumerate(rows, start=1)],
                     ["rank", "collection", "movies", "movies_with_revenue", "total_revenue", "median_vote_average",
                      "earliest -> latest release"])
+        print("\ntotal_revenue is the sum of the known revenues only (see movies_with_revenue), so it is a")
+        print("lower bound for collections where some revenues are unknown.")
 
     def task5(self):
         """Median runtime and movie count per decade and primary genre (the first
