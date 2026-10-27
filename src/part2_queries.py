@@ -428,6 +428,9 @@ class MovieQueries:
                         "ratings": {"$sum": 1},
                         "std_dev": {"$stdDevPop": "$rating"},
                         "movie_ids": {"$addToSet": "$movie_id"}}},
+            # Ratings that could not be linked to a movie have movie_id null. They count in
+            # ratings and variance, but have no genres, so null is removed before the join.
+            {"$set": {"movie_ids": {"$setDifference": ["$movie_ids", [None]]}}},
             {"$lookup": {"from": "movies", "localField": "movie_ids", "foreignField": "_id", "as": "rated_movies",
                          "pipeline": [{"$project": {"_id": 0, "genres": 1}}]}},
             {"$project": {"ratings": 1,
