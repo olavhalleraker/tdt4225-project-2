@@ -147,7 +147,9 @@ class MovieInserter:
         # Text index for the "noir" search in task 7
         self.db.movies.create_index([("overview", TEXT), ("tagline", TEXT)], name="overview_tagline_text",
                                     default_language="english")
-        # One rating per user and MovieLens movie; also supports grouping per user (task 10)
+        # One rating per user and MovieLens movie. The unique index enforces this
+        # (schema-on-write) and serves lookups by user_id (left prefix). Note that the
+        # $group per user in task 10 does not use it: it scans the whole collection.
         self.db.ratings.create_index([("user_id", ASCENDING), ("movielens_id", ASCENDING)],
                                      name="user_movielens_unique", unique=True)
         print("\nCreated indexes in %.0f s" % (time.time() - started))
