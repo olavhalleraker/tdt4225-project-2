@@ -414,6 +414,8 @@ class MovieQueries:
         print_table([[rank, r["_id"], r["movies"], r["example_title"], r["example_vote_count"]]
                      for rank, r in enumerate(rows, start=1)],
                     ["rank", "original_language", "movies", "example_title", "example_vote_count"])
+        print("\nThe production companies have no country in the data, so 'company is United States' can only")
+        print("be checked by name. TMDB uses the code 'xx' for movies with no language (e.g. silent films).")
 
     def task10(self):
         """For each user: number of ratings, population variance of the ratings and
