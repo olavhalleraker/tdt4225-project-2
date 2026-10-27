@@ -120,18 +120,33 @@ class MovieQueries:
                         "revenues": {"$push": "$revenue"},
                         "mean_vote_average": {"$avg": "$vote_average"}}},
         ]
-        rows = self.aggregate("movies", per_director + [
-            {"$match": {"movies_with_revenue": {"$gte": 5}}},
-            {"$project": {"director": 1, "movies": 1, "movies_with_revenue": 1,
-                          "median_revenue": median("$revenues"), "mean_vote_average": 1}},
-            {"$sort": {"median_revenue": DESCENDING, "movies": DESCENDING, "director": 1}},
-            {"$limit": 10},
-        ])
+        def top_10(min_movies, min_with_revenue):
+            return self.aggregate("movies", per_director + [
+                {"$match": {"movies": {"$gte": min_movies}, "movies_with_revenue": {"$gte": min_with_revenue}}},
+                {"$project": {"director": 1, "movies": 1, "movies_with_revenue": 1,
+                              "median_revenue": median("$revenues"), "mean_vote_average": 1}},
+                {"$sort": {"median_revenue": DESCENDING, "movies": DESCENDING, "director": 1}},
+                {"$limit": 10},
+            ])
+
+        def show(rows):
+            print_table([[rank, r["_id"], r["director"], r["movies"], r["movies_with_revenue"],
+                          round(r["median_revenue"]), r["mean_vote_average"]] for rank, r in enumerate(rows, start=1)],
+                        ["rank", "director_id", "director", "movies", "movies_with_revenue", "median_revenue",
+                         "mean_vote_average"])
+
+        # Main answer: >= 5 movies with known revenue, so that every median is
+        # computed from at least 5 values (revenue is unknown for most movies)
+        rows = top_10(5, 5)
+        print("Interpretation: directors with >= 5 movies WITH KNOWN REVENUE (the median is taken over")
+        print("the known revenues; movie count and mean vote_average are over all their movies).\n")
         print_first_document(rows)
-        print_table([[rank, r["_id"], r["director"], r["movies"], r["movies_with_revenue"],
-                      round(r["median_revenue"]), r["mean_vote_average"]] for rank, r in enumerate(rows, start=1)],
-                    ["rank", "director_id", "director", "movies", "movies_with_revenue", "median_revenue",
-                     "mean_vote_average"])
+        show(rows)
+        # Literal reading of the question: >= 5 directed movies, median over the
+        # known revenues (at least one)
+        literal = top_10(5, 1)
+        print("\nLiteral reading: directors with >= 5 movies (median over their known revenues, >= 1):")
+        show(literal)
         counts = self.aggregate("movies", per_director + [
             {"$group": {"_id": None, "at_least_5_movies": count_if({"$gte": ["$movies", 5]}),
                         "at_least_5_with_revenue": count_if({"$gte": ["$movies_with_revenue", 5]})}}])[0]
