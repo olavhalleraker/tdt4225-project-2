@@ -380,10 +380,12 @@ class MovieQueries:
         show(rows)
         print("\nmean_revenue is the mean of the known revenues (films_with_revenue).")
 
+        if not rows:
+            return
         cutoff = rows[-1]["mean_vote_average"]
         self_pairs = [r for r in pairs(same_person=True) if r["mean_vote_average"] >= cutoff]
         print("\nDirectors who act in >= 3 of their own films (excluded above) with a mean vote_average at")
-        print("least as high as rank 20 ({:.2f}): {}".format(cutoff, len(self_pairs)))
+        print("least as high as rank {} ({:.2f}): {}".format(len(rows), cutoff, len(self_pairs)))
         if self_pairs:
             show(self_pairs)
 
