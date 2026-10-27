@@ -48,7 +48,8 @@ def read_movie_rows(path=MOVIES_CSV, repaired=None):
             if len(row) == 10:
                 rest = next(reader)
                 assert len(rest) == 15, "Cannot repair the row of movie %s" % row[5]
-                row = row[:9] + [row[9] + rest[0]] + rest[1:]
+                # The line break separated two words, so join the parts with a space
+                row = row[:9] + [row[9].rstrip() + " " + rest[0].lstrip()] + rest[1:]
                 if repaired is not None:
                     repaired.append(int(row[5]))
             assert len(row) == len(MOVIE_COLUMNS), "Row with %d fields" % len(row)
