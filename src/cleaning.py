@@ -157,7 +157,7 @@ def build_crew(crew):
 
 
 def read_credits(path=CREDITS_CSV):
-    """Read credits.csv. 43 movie ids occur twice; the copies have the same cast
+    """Read credits.csv. 43 movie ids occur more than once (44 extra rows); the copies have the same cast
     and the same crew members (only the order of the crew list differs in 7
     cases), so the first copy is kept.
 
