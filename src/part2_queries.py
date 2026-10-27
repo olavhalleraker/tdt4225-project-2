@@ -461,6 +461,7 @@ class MovieQueries:
         varied = list(stats.find(active).sort([("variance", DESCENDING), ("ratings", DESCENDING), ("_id", 1)]).limit(10))
         print("\nUsers with >= 20 ratings at the highest possible variance 5.0625 (half 0.5, half 5.0): {:,}".format(
             stats.count_documents({**active, "variance": 5.0625})))
+        print_first_document(varied)
         print("Top 10 highest-variance users (ties: more ratings first):")
         print_table([[rank, r["_id"], r["ratings"], r["variance"], r["distinct_genres"]]
                      for rank, r in enumerate(varied, start=1)], headers, floatfmt=".4f")
