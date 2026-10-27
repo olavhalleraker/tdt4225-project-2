@@ -9,6 +9,7 @@
 | `src/part1_eda.py` | Part 1.1 – exploratory data analysis, writes figures to `report/figures/` |
 | `src/part1_insert.py` | Part 1.2 – collections with validators, insertion of the cleaned data and indexes |
 | `src/part2_queries.py` | Part 2 – one method per task (aggregation pipelines + Python) |
+| `src/explain_indexes.py` | `explain()` of some queries: which use an index and which scan the collection, plus index sizes |
 | `src/requirements.txt` | pip packages |
 | `output/` | Console output of the programs, and CSV files with the full answers of tasks 2, 5 and 10 |
 | `report/figures` | The EDA figures |
@@ -51,4 +52,5 @@
 python part1_eda.py | tee ../output/part1_eda.txt
 python part1_insert.py | tee ../output/part1_insert.txt
 python part2_queries.py | tee ../output/part2_results.txt
+python explain_indexes.py | tee ../output/explain_indexes.txt
 ```
