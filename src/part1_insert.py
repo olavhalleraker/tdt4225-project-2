@@ -87,7 +87,7 @@ class MovieInserter:
         for movie in movies.values():
             movie["keywords"] = keywords.get(movie["_id"], [])
             movie["cast"], movie["crew"] = credits.get(movie["_id"], ([], []))
-            movie["movielens_ids"] = sorted(movielens_ids[movie["_id"]])
+            movie["movielens_ids"] = sorted(movielens_ids.get(movie["_id"], []))
             batch.append(movie)
             if len(batch) == MOVIES_PER_BATCH:
                 self.db.movies.insert_many(batch)
