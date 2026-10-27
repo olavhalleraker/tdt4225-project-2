@@ -341,30 +341,49 @@ class MovieQueries:
     def task8(self):
         """The 20 director-actor pairs with >= 3 movies together (movies with
         vote_count >= 100) with the highest mean vote_average, with films count
-        and mean revenue."""
-        rows = self.aggregate("movies", [
-            {"$match": {"vote_count": {"$gte": 100}}},
-            {"$project": {"vote_average": 1, "revenue": 1, "director": directors_of_movie(),
-                          "actor": actors_of_movie()}},
-            {"$unwind": "$director"},
-            {"$unwind": "$actor"},
-            {"$match": {"$expr": {"$ne": ["$director.id", "$actor.id"]}}},  # not a director in their own film
-            {"$group": {"_id": {"director_id": "$director.id", "actor_id": "$actor.id"},
-                        "director": {"$first": "$director.name"},
-                        "actor": {"$first": "$actor.name"},
-                        "films": {"$sum": 1},
-                        "mean_vote_average": {"$avg": "$vote_average"},
-                        "films_with_revenue": count_if({"$ne": ["$revenue", None]}),
-                        "mean_revenue": {"$avg": "$revenue"}}},
-            {"$match": {"films": {"$gte": 3}}},
-            {"$sort": {"mean_vote_average": DESCENDING, "films": DESCENDING, "director": 1, "actor": 1}},
-            {"$limit": 20},
-        ])
+        and mean revenue.
+
+        A collaboration is read as two different people, so a director who acts
+        in their own film is not paired with themself. These self-pairs are
+        listed separately below the main table."""
+        def pairs(same_person):
+            return self.aggregate("movies", [
+                {"$match": {"vote_count": {"$gte": 100}}},
+                {"$project": {"vote_average": 1, "revenue": 1, "director": directors_of_movie(),
+                              "actor": actors_of_movie()}},
+                {"$unwind": "$director"},
+                {"$unwind": "$actor"},
+                {"$match": {"$expr": {"$eq" if same_person else "$ne": ["$director.id", "$actor.id"]}}},
+                {"$group": {"_id": {"director_id": "$director.id", "actor_id": "$actor.id"},
+                            "director": {"$first": "$director.name"},
+                            "actor": {"$first": "$actor.name"},
+                            "films": {"$sum": 1},
+                            "mean_vote_average": {"$avg": "$vote_average"},
+                            "films_with_revenue": count_if({"$ne": ["$revenue", None]}),
+                            "mean_revenue": {"$avg": "$revenue"}}},
+                {"$match": {"films": {"$gte": 3}}},
+                {"$sort": {"mean_vote_average": DESCENDING, "films": DESCENDING, "director": 1, "actor": 1}},
+                {"$limit": 20},
+            ])
+
+        def show(rows):
+            print_table([[rank, r["director"], r["actor"], r["films"], r["mean_vote_average"],
+                          r["films_with_revenue"], None if r["mean_revenue"] is None else round(r["mean_revenue"])]
+                         for rank, r in enumerate(rows, start=1)],
+                        ["rank", "director", "actor", "films", "mean_vote_average", "films_with_revenue",
+                         "mean_revenue"])
+
+        rows = pairs(same_person=False)
         print_first_document(rows)
-        print_table([[rank, r["director"], r["actor"], r["films"], r["mean_vote_average"], r["films_with_revenue"],
-                      None if r["mean_revenue"] is None else round(r["mean_revenue"])]
-                     for rank, r in enumerate(rows, start=1)],
-                    ["rank", "director", "actor", "films", "mean_vote_average", "films_with_revenue", "mean_revenue"])
+        show(rows)
+        print("\nmean_revenue is the mean of the known revenues (films_with_revenue).")
+
+        cutoff = rows[-1]["mean_vote_average"]
+        self_pairs = [r for r in pairs(same_person=True) if r["mean_vote_average"] >= cutoff]
+        print("\nDirectors who act in >= 3 of their own films (excluded above) with a mean vote_average at")
+        print("least as high as rank 20 ({:.2f}): {}".format(cutoff, len(self_pairs)))
+        if self_pairs:
+            show(self_pairs)
 
     def task9(self):
         """Movies with original_language != "en" where a production country (or
