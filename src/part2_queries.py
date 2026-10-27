@@ -444,8 +444,13 @@ class MovieQueries:
         print("Statistics for {:,} users written to the collection user_rating_stats ({:.0f} s).".format(
             stats.count_documents({}), time.time() - started))
         active = {"ratings": {"$gte": 20}}
-        print("Users with >= 20 ratings: {:,}, of these with all {} genres: {:,}\n".format(
+        print("Users with >= 20 ratings: {:,}, of these with all {} genres: {:,}".format(
             stats.count_documents(active), n_genres, stats.count_documents({**active, "distinct_genres": n_genres})))
+        # The >= 20 filter is applied to both lists. Show that it does not change the
+        # genre-diverse list: no user below 20 ratings reaches the maximum number of genres.
+        print("Users with < 20 ratings and all {} genres: {:,}".format(
+            n_genres, stats.count_documents({"ratings": {"$lt": 20}, "distinct_genres": n_genres})))
+        print("Many users are tied at the maximum, so the top 10 is decided by the tie-breaker.\n")
 
         headers = ["rank", "user_id", "ratings", "variance", "distinct_genres"]
         diverse = list(stats.find(active).sort([("distinct_genres", DESCENDING), ("ratings", 1), ("_id", 1)]).limit(10))
