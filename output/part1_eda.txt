@@ -409,4 +409,62 @@ Movie has no tmdbId                                     13,503      0.05 %
 
 ratings_small.csv for comparison: 100,004 ratings, 671 users, 9,066 movies (not used).
 
+==============================================================================
+17. Impact of the missing values on the Part 2 tasks
+==============================================================================
+Group          Movies    budget known    revenue known    runtime known    vote_average known
+-------------  --------  --------------  ---------------  ---------------  --------------------
+1870s          2         0.0 %           0.0 %            100.0 %          100.0 %
+1880s          4         0.0 %           0.0 %            100.0 %          100.0 %
+1890s          75        0.0 %           0.0 %            100.0 %          100.0 %
+1900s          87        2.3 %           0.0 %            100.0 %          90.8 %
+1910s          176       4.0 %           2.3 %            99.4 %           89.8 %
+1920s          431       9.0 %           3.7 %            98.1 %           89.1 %
+1930s          1,315     6.0 %           2.9 %            99.0 %           84.9 %
+1940s          1,493     5.2 %           3.4 %            98.9 %           91.4 %
+1950s          2,079     6.8 %           4.5 %            97.7 %           93.2 %
+1960s          2,621     8.6 %           6.1 %            97.3 %           92.5 %
+1970s          3,471     10.4 %          7.3 %            96.5 %           90.5 %
+1980s          3,928     18.7 %          22.5 %           96.7 %           94.5 %
+1990s          5,676     22.5 %          22.9 %           96.1 %           93.2 %
+2000s          11,195    25.2 %          19.7 %           95.5 %           94.4 %
+2010s          12,795    22.4 %          17.5 %           95.0 %           94.9 %
+2020s          1         0.0 %           0.0 %            0.0 %            0.0 %
+US production  21,142    29.3 %          26.2 %           99.2 %           95.4 %
+Not US         24,291    10.1 %          7.0 %            93.2 %           91.7 %
+-> Missing budget/revenue is not spread evenly over decades and countries (compare the rows),
+   so medians and totals of revenue (tasks 1, 4 and 8) mostly describe the movies where it is known.
+
+------------------------------------------------------  -------------
+Task 1: directors with >= 5 movies                      2,281
+Task 1: ... of these with >= 5 known revenues           382
+Task 4: collections with >= 3 movies                    628
+Task 4: ... with all revenues known                     129
+Task 4: ... with no revenue known                       274
+Task 5: movies with date and genre but unknown runtime  1,271
+Task 7/8: movies with vote_count >= 50 / >= 100         9,142 / 6,050
+------------------------------------------------------  -------------
+
+Task 6: share of the top-5 billed cast with unknown gender, per decade:
+Decade    Top-5 cast entries    Unknown gender
+--------  --------------------  ----------------
+1870s     2                     50.0 %
+1880s     1                     100.0 %
+1890s     68                    97.1 %
+1900s     96                    77.1 %
+1910s     775                   45.0 %
+1920s     1,928                 38.6 %
+1930s     6,296                 24.5 %
+1940s     7,153                 17.6 %
+1950s     9,943                 20.6 %
+1960s     12,265                29.0 %
+1970s     16,079                31.2 %
+1980s     18,118                28.1 %
+1990s     25,876                21.7 %
+2000s     48,659                27.7 %
+2010s     54,975                34.0 %
+2020s     5                     0.0 %
+-> Unknown gender is ignored in task 6. Where the share is high, the female proportion is
+   based on fewer people per movie.
+
 Figures written to report/figures/
