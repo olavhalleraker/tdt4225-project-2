@@ -8,14 +8,31 @@ Task 1: Considering only crew with job = Director, which 10 directors with >=
 5 movies have the highest median revenue? Also report each director's movie
 count and mean vote_average.
 ==============================================================================
-First result document:
-{'_id': 11343,
- 'director': 'David Yates',
- 'movies': 10,
- 'movies_with_revenue': 6,
- 'mean_vote_average': 6.699999999999999,
- 'median_revenue': 936085967.5}
+Interpretation: directors with >= 5 movies (the median is taken over their known revenues;
+movie count and mean vote_average are over all their movies).
 
+First result document:
+{'_id': 12891,
+ 'director': 'Joss Whedon',
+ 'movies': 5,
+ 'movies_with_revenue': 3,
+ 'mean_vote_average': 7.4,
+ 'median_revenue': 1405403694.0}
+
+  rank  director_id    director            movies    movies_with_revenue    median_revenue    mean_vote_average
+------  -------------  ----------------  --------  ---------------------  ----------------  -------------------
+     1  12891          Joss Whedon              5                      3     1,405,403,694                 7.40
+     2  8023           Kyle Balda               5                      3     1,020,063,384                 6.62
+     3  11343          David Yates             10                      6       936,085,968                 6.70
+     4  108            Peter Jackson           14                     11       871,368,364                 7.12
+     5  1              George Lucas             7                      6       712,398,168                 6.81
+     6  124748         Chris Renaud             5                      4       709,485,961                 6.70
+     7  229962         Mike Thurmeier           6                      2       642,911,910                 6.67
+     8  7087           Brad Bird                6                      5       623,722,818                 7.15
+     9  10943          Francis Lawrence         6                      6       619,388,636                 6.80
+    10  12099          Raman Hui                5                      2       592,121,491                 6.22
+
+Stricter reading: directors with >= 5 movies WITH KNOWN REVENUE (median over >= 5 values):
   rank  director_id    director            movies    movies_with_revenue    median_revenue    mean_vote_average
 ------  -------------  ----------------  --------  ---------------------  ----------------  -------------------
      1  11343          David Yates             10                      6       936,085,968                 6.70
@@ -30,7 +47,7 @@ First result document:
     10  7879           John Lasseter           10                      5       461,983,149                 6.72
 
 Directors with >= 5 movies: 2,281, of these with >= 5 known revenues: 382
-[task 1 took 0.7 s]
+[task 1 took 3.9 s]
 
 ==============================================================================
 Task 2: List actor pairs that have co-starred in >= 3 movies together, their
@@ -80,7 +97,7 @@ Top 30 by co-appearances (ties by average vote_average):
     29  18897         Jackie Chan       62410         Sammo Hung                     17                6.84
     30  15831         Frank Welker      86314         Mindy Cohn                     17                6.66
 (all 45,650 rows written to output/task2_actor_pairs.csv)
-[task 2 took 30.8 s]
+[task 2 took 40.4 s]
 
 ==============================================================================
 Task 3: List the top 10 actors (with >= 10 credited movies) that have the
@@ -114,7 +131,7 @@ Top 10 by distinct genres (ties: fewer credited movies first). Example genres = 
      8  2440        Bill Nighy                      61                 20  Comedy (29), Drama (29), Action (16), Family (13), Adventure (12)
      9  1954        Billy Zane                      64                 20  Drama (31), Thriller (24), Action (21), Comedy (18), Horror (12)
     10  147         Michael Madsen                  65                 20  Thriller (31), Drama (27), Action (26), Crime (14), Horror (12)
-[task 3 took 2.0 s]
+[task 3 took 2.2 s]
 
 ==============================================================================
 Task 4: For film collections (belongs_to_collection.name not null) with >= 3
@@ -144,6 +161,9 @@ First result document:
      8  The Twilight Collection                     5                      5    3,342,107,290                   5.80  2008-11-20 -> 2012-11-13
      9  Ice Age Collection                          5                      5    3,216,708,553                   6.50  2002-03-10 -> 2016-06-23
     10  Jurassic Park Collection                    4                      4    3,031,484,143                   6.35  1993-06-11 -> 2015-06-09
+
+total_revenue is the sum of the known revenues only (see movies_with_revenue), so it is a
+lower bound for collections where some revenues are unknown.
 [task 4 took 0.0 s]
 
 ==============================================================================
@@ -151,248 +171,252 @@ Task 5: By decade and primary genre (first element in genres), what is the
 median runtime and movie count? List results sorted by decade then median
 runtime (desc).
 ==============================================================================
-Movies with release date, runtime and at least one genre: 41,694, in 231 (decade, genre) groups.
+Movies with release date and at least one genre: 42,965 (41,694 with known runtime), in 232 (decade, genre) groups.
+Sorted by decade (ascending), then median runtime (descending). Groups with only a few movies
+(e.g. before 1910) give medians that say little.
 
 First result document:
-{'movies': 2,
- 'decade': 1870,
+{'decade': 1870,
  'primary_genre': 'Documentary',
+ 'movies': 2,
+ 'movies_with_runtime': 2,
  'median_runtime': 1.0}
 
-decade    primary_genre      movies    median_runtime
---------  ---------------  --------  ----------------
-1870s     Documentary             2              1.00
-1880s     Documentary             4              1.00
-1890s     Fantasy                 8              1.50
-1890s     Documentary            27              1.00
-1890s     Comedy                  9              1.00
-1890s     Horror                  3              1.00
-1890s     Action                  2              1.00
-1890s     Drama                   2              1.00
-1890s     Family                  1              1.00
-1890s     History                 1              1.00
-1900s     History                 1             60.00
-1900s     Adventure               4             15.00
-1900s     Drama                   7             10.00
-1900s     Action                  2              9.00
-1900s     Thriller                1              8.00
-1900s     Science Fiction         2              5.50
-1900s     Fantasy                15              4.00
-1900s     Horror                  2              4.00
-1900s     Comedy                 17              3.00
-1900s     Music                   1              3.00
-1900s     Crime                   2              2.00
-1900s     Animation               1              2.00
-1900s     Documentary            12              1.00
-1900s     Romance                 2              1.00
-1910s     History                 2            109.00
-1910s     War                     2            108.00
-1910s     Mystery                 3             84.00
-1910s     Adventure               8             70.00
-1910s     Romance                 6             68.50
-1910s     Drama                  52             65.00
-1910s     Western                 4             60.50
-1910s     Crime                   7             59.00
-1910s     Family                  1             52.00
-1910s     Documentary             2             43.50
-1910s     Horror                  2             38.50
-1910s     Action                  1             29.00
-1910s     Comedy                 53             27.00
-1910s     Fantasy                 6             14.50
-1910s     Animation               5             12.00
-1920s     Science Fiction         1            120.00
-1920s     Music                   2            114.00
-1920s     War                     4            106.00
-1920s     History                 4            105.50
-1920s     Adventure              21            100.00
-1920s     Thriller                4             93.50
-1920s     Action                 18             90.50
-1920s     Drama                 164             90.00
-1920s     Western                10             88.50
-1920s     Romance                18             88.00
-1920s     Crime                  16             83.00
-1920s     Horror                  5             83.00
-1920s     Comedy                 92             67.00
-1920s     Documentary            18             67.00
-1920s     Fantasy                 4             66.00
-1920s     Mystery                 2             57.50
-1920s     Family                  2             37.00
-1920s     Animation              10              6.50
-1930s     Music                  32             94.50
-1930s     History                10             91.00
-1930s     Adventure              55             90.00
-1930s     Romance                79             86.00
-1930s     Drama                 382             85.00
-1930s     War                    13             85.00
-1930s     Comedy                349             82.00
-1930s     Western                21             81.00
-1930s     Science Fiction         5             80.00
-1930s     Thriller               10             79.00
-1930s     Family                  5             78.00
-1930s     Fantasy                 8             76.50
-1930s     Action                 80             76.00
-1930s     Crime                  92             74.00
-1930s     Mystery                38             70.00
-1930s     Horror                 28             68.00
-1930s     Documentary            14             63.00
-1930s     Animation              37              8.00
-1940s     Science Fiction         1            220.00
-1940s     History                11            107.00
-1940s     Adventure              44             98.50
-1940s     Drama                 466             98.00
-1940s     Action                 88             93.50
-1940s     Music                  35             92.00
-1940s     Romance                52             91.50
-1940s     War                    41             91.00
-1940s     Comedy                323             90.00
-1940s     Crime                 135             86.00
-1940s     Thriller               47             86.00
-1940s     Western                40             86.00
-1940s     Family                  8             86.00
-1940s     Fantasy                23             85.00
-1940s     Mystery                41             71.00
-1940s     Horror                 27             67.00
-1940s     Documentary            20             55.00
-1940s     Animation              34              8.00
-1950s     Music                  34            101.00
-1950s     Drama                 627             98.00
-1950s     History                17             97.00
-1950s     War                    46             96.00
-1950s     Romance                76             95.00
-1950s     Comedy                330             93.00
-1950s     Action                166             93.00
-1950s     Adventure             100             93.00
-1950s     Mystery                22             91.50
-1950s     Family                 12             88.50
-1950s     Thriller               46             87.50
-1950s     Crime                 170             86.00
-1950s     Western               109             84.00
-1950s     Fantasy                21             79.00
-1950s     Horror                 79             78.00
-1950s     Science Fiction        50             78.00
-1950s     Documentary            32             33.00
-1950s     Animation              27              7.00
-1960s     War                    50            112.50
-1960s     TV Movie                5            112.00
-1960s     History                24            110.00
-1960s     Drama                 714            102.00
-1960s     Romance                75            102.00
-1960s     Mystery                36            101.50
-1960s     Crime                 104            100.50
-1960s     Action                247            100.00
-1960s     Music                  28            100.00
-1960s     Western                96             98.50
-1960s     Comedy                480             98.00
-1960s     Adventure             138             97.00
-1960s     Thriller               54             96.50
-1960s     Foreign                10             91.50
-1960s     Fantasy                30             91.00
-1960s     Horror                146             87.00
-1960s     Science Fiction        57             85.00
-1960s     Documentary            77             80.00
-1960s     Family                 20             80.00
-1960s     Animation              36             25.00
-1970s     History                22            120.00
-1970s     War                    35            107.00
-1970s     Romance                59            103.00
-1970s     Drama                 861            102.00
-1970s     Crime                 150            100.00
-1970s     Mystery                56             99.50
-1970s     Action                455             98.00
-1970s     Thriller              126             98.00
-1970s     Adventure             123             98.00
-1970s     Music                  33             98.00
-1970s     Foreign                20             96.50
-1970s     Comedy                492             96.00
-1970s     Western                88             96.00
-1970s     Fantasy                47             94.00
-1970s     Science Fiction        47             94.00
-1970s     Horror                320             91.00
-1970s     Family                 39             90.00
-1970s     TV Movie               28             87.50
-1970s     Documentary           136             86.00
-1970s     Animation              57             38.00
-1980s     War                    31            120.00
-1980s     Drama                 840            105.00
-1980s     Crime                 132            102.00
-1980s     TV Movie               29            102.00
-1980s     Adventure             168            101.00
-1980s     History                17            100.00
-1980s     Action                493             98.00
-1980s     Thriller               85             98.00
-1980s     Romance                68             98.00
-1980s     Mystery                38             97.00
-1980s     Western                10             97.00
-1980s     Comedy                823             96.00
-1980s     Science Fiction        81             95.00
-1980s     Music                  39             94.00
-1980s     Fantasy                90             93.50
-1980s     Horror                379             91.00
-1980s     Family                 42             90.00
-1980s     Foreign                 7             89.00
-1980s     Documentary           124             84.00
-1980s     Animation             113             70.00
-1990s     War                    23            115.00
-1990s     History                33            111.00
-1990s     Drama               1,427            105.00
-1990s     Crime                 179            105.00
-1990s     Western                21            102.00
-1990s     Foreign                16            100.50
-1990s     Mystery                56            100.00
-1990s     Thriller              163             99.00
-1990s     Romance               141             99.00
-1990s     Action                690             98.00
-1990s     Adventure             193             97.00
-1990s     Comedy              1,153             96.00
-1990s     Fantasy               132             96.00
-1990s     TV Movie               70             95.00
-1990s     Science Fiction        94             94.00
-1990s     Music                  58             94.00
-1990s     Horror                230             93.00
-1990s     Family                 75             90.00
-1990s     Documentary           246             86.50
-1990s     Animation             140             74.00
-2000s     War                    54            114.00
-2000s     History                46            110.50
-2000s     Drama               3,028            102.00
-2000s     Crime                 351            102.00
-2000s     Romance               201            102.00
-2000s     Adventure             335            100.00
-2000s     Action              1,135             98.00
-2000s     Thriller              313             98.00
-2000s     Fantasy               167             98.00
-2000s     Music                  93             98.00
-2000s     Foreign                33             98.00
-2000s     Western                16             98.00
-2000s     Mystery                99             96.00
-2000s     Comedy              2,157             95.00
-2000s     Science Fiction       111             92.00
-2000s     Horror                590             91.00
-2000s     Family                105             90.00
-2000s     TV Movie              100             90.00
-2000s     Documentary           995             88.00
-2000s     Animation             322             76.00
-2010s     History                81            105.00
-2010s     Crime                 309            103.00
-2010s     Drama               3,082            100.00
-2010s     Action              1,025            100.00
-2010s     War                    72            100.00
-2010s     Romance               368             99.00
-2010s     Music                 117             99.00
-2010s     Western                28             98.50
-2010s     Adventure             297             97.00
-2010s     Foreign                26             96.50
-2010s     Mystery               152             95.50
-2010s     Thriller              744             95.00
-2010s     Comedy              2,143             93.00
-2010s     Fantasy               137             93.00
-2010s     Science Fiction       183             91.00
-2010s     Horror                762             90.00
-2010s     Family                189             90.00
-2010s     Documentary         1,562             88.50
-2010s     TV Movie              138             86.50
-2010s     Animation             323             80.00
-(all 231 rows written to output/task5_runtime_by_decade_and_genre.csv)
+decade    primary_genre      movies    movies_with_runtime    median_runtime
+--------  ---------------  --------  ---------------------  ----------------
+1870s     Documentary             2                      2              1.00
+1880s     Documentary             4                      4              1.00
+1890s     Fantasy                 8                      8              1.50
+1890s     Documentary            27                     27              1.00
+1890s     Comedy                  9                      9              1.00
+1890s     Horror                  3                      3              1.00
+1890s     Action                  2                      2              1.00
+1890s     Drama                   2                      2              1.00
+1890s     Family                  1                      1              1.00
+1890s     History                 1                      1              1.00
+1900s     History                 1                      1             60.00
+1900s     Adventure               4                      4             15.00
+1900s     Drama                   7                      7             10.00
+1900s     Action                  2                      2              9.00
+1900s     Thriller                1                      1              8.00
+1900s     Science Fiction         2                      2              5.50
+1900s     Fantasy                15                     15              4.00
+1900s     Horror                  2                      2              4.00
+1900s     Comedy                 17                     17              3.00
+1900s     Music                   1                      1              3.00
+1900s     Crime                   2                      2              2.00
+1900s     Animation               1                      1              2.00
+1900s     Documentary            12                     12              1.00
+1900s     Romance                 2                      2              1.00
+1910s     History                 2                      2            109.00
+1910s     War                     2                      2            108.00
+1910s     Mystery                 3                      3             84.00
+1910s     Adventure               8                      8             70.00
+1910s     Romance                 6                      6             68.50
+1910s     Drama                  52                     52             65.00
+1910s     Western                 4                      4             60.50
+1910s     Crime                   7                      7             59.00
+1910s     Family                  1                      1             52.00
+1910s     Documentary             2                      2             43.50
+1910s     Horror                  2                      2             38.50
+1910s     Action                  1                      1             29.00
+1910s     Comedy                 54                     53             27.00
+1910s     Fantasy                 6                      6             14.50
+1910s     Animation               5                      5             12.00
+1920s     Science Fiction         1                      1            120.00
+1920s     Music                   2                      2            114.00
+1920s     War                     4                      4            106.00
+1920s     History                 4                      4            105.50
+1920s     Adventure              22                     21            100.00
+1920s     Thriller                4                      4             93.50
+1920s     Action                 18                     18             90.50
+1920s     Drama                 165                    164             90.00
+1920s     Western                10                     10             88.50
+1920s     Romance                18                     18             88.00
+1920s     Crime                  16                     16             83.00
+1920s     Horror                  5                      5             83.00
+1920s     Comedy                 93                     92             67.00
+1920s     Documentary            18                     18             67.00
+1920s     Fantasy                 4                      4             66.00
+1920s     Mystery                 2                      2             57.50
+1920s     Family                  2                      2             37.00
+1920s     Animation              10                     10              6.50
+1930s     Music                  32                     32             94.50
+1930s     History                10                     10             91.00
+1930s     Adventure              55                     55             90.00
+1930s     Romance                80                     79             86.00
+1930s     Drama                 382                    382             85.00
+1930s     War                    13                     13             85.00
+1930s     Comedy                353                    349             82.00
+1930s     Western                22                     21             81.00
+1930s     Science Fiction         5                      5             80.00
+1930s     Thriller               10                     10             79.00
+1930s     Family                  5                      5             78.00
+1930s     Fantasy                 8                      8             76.50
+1930s     Action                 80                     80             76.00
+1930s     Crime                  92                     92             74.00
+1930s     Mystery                38                     38             70.00
+1930s     Horror                 28                     28             68.00
+1930s     Documentary            14                     14             63.00
+1930s     Animation              37                     37              8.00
+1940s     Science Fiction         1                      1            220.00
+1940s     History                11                     11            107.00
+1940s     Adventure              45                     44             98.50
+1940s     Drama                 468                    466             98.00
+1940s     Action                 88                     88             93.50
+1940s     Music                  35                     35             92.00
+1940s     Romance                52                     52             91.50
+1940s     War                    41                     41             91.00
+1940s     Comedy                326                    323             90.00
+1940s     Crime                 136                    135             86.00
+1940s     Thriller               47                     47             86.00
+1940s     Western                41                     40             86.00
+1940s     Family                  8                      8             86.00
+1940s     Fantasy                23                     23             85.00
+1940s     Mystery                41                     41             71.00
+1940s     Horror                 27                     27             67.00
+1940s     Documentary            20                     20             55.00
+1940s     Animation              34                     34              8.00
+1950s     Music                  34                     34            101.00
+1950s     Drama                 636                    627             98.00
+1950s     History                17                     17             97.00
+1950s     War                    46                     46             96.00
+1950s     Romance                77                     76             95.00
+1950s     Comedy                350                    330             93.00
+1950s     Action                167                    166             93.00
+1950s     Adventure             100                    100             93.00
+1950s     Mystery                22                     22             91.50
+1950s     Family                 13                     12             88.50
+1950s     Thriller               46                     46             87.50
+1950s     Crime                 170                    170             86.00
+1950s     Western               110                    109             84.00
+1950s     Fantasy                21                     21             79.00
+1950s     Horror                 79                     79             78.00
+1950s     Science Fiction        50                     50             78.00
+1950s     Documentary            32                     32             33.00
+1950s     Animation              27                     27              7.00
+1960s     War                    52                     50            112.50
+1960s     TV Movie                6                      5            112.00
+1960s     History                25                     24            110.00
+1960s     Drama                 724                    714            102.00
+1960s     Romance                76                     75            102.00
+1960s     Mystery                36                     36            101.50
+1960s     Crime                 107                    104            100.50
+1960s     Action                252                    247            100.00
+1960s     Music                  29                     28            100.00
+1960s     Western                99                     96             98.50
+1960s     Comedy                497                    480             98.00
+1960s     Adventure             139                    138             97.00
+1960s     Thriller               55                     54             96.50
+1960s     Foreign                10                     10             91.50
+1960s     Fantasy                30                     30             91.00
+1960s     Horror                146                    146             87.00
+1960s     Science Fiction        58                     57             85.00
+1960s     Documentary            77                     77             80.00
+1960s     Family                 20                     20             80.00
+1960s     Animation              36                     36             25.00
+1970s     History                23                     22            120.00
+1970s     War                    36                     35            107.00
+1970s     Romance                61                     59            103.00
+1970s     Drama                 873                    861            102.00
+1970s     Crime                 153                    150            100.00
+1970s     Mystery                57                     56             99.50
+1970s     Action                468                    455             98.00
+1970s     Thriller              135                    126             98.00
+1970s     Adventure             124                    123             98.00
+1970s     Music                  33                     33             98.00
+1970s     Foreign                20                     20             96.50
+1970s     Comedy                512                    492             96.00
+1970s     Western                89                     88             96.00
+1970s     Science Fiction        49                     47             94.00
+1970s     Fantasy                48                     47             94.00
+1970s     Horror                321                    320             91.00
+1970s     Family                 41                     39             90.00
+1970s     TV Movie               28                     28             87.50
+1970s     Documentary           139                    136             86.00
+1970s     Animation              60                     57             38.00
+1980s     War                    32                     31            120.00
+1980s     Drama                 858                    840            105.00
+1980s     Crime                 136                    132            102.00
+1980s     TV Movie               29                     29            102.00
+1980s     Adventure             169                    168            101.00
+1980s     History                17                     17            100.00
+1980s     Action                494                    493             98.00
+1980s     Thriller               87                     85             98.00
+1980s     Romance                71                     68             98.00
+1980s     Mystery                39                     38             97.00
+1980s     Western                10                     10             97.00
+1980s     Comedy                860                    823             96.00
+1980s     Science Fiction        83                     81             95.00
+1980s     Music                  39                     39             94.00
+1980s     Fantasy                91                     90             93.50
+1980s     Horror                382                    379             91.00
+1980s     Family                 43                     42             90.00
+1980s     Foreign                 7                      7             89.00
+1980s     Documentary           128                    124             84.00
+1980s     Animation             117                    113             70.00
+1990s     War                    24                     23            115.00
+1990s     History                34                     33            111.00
+1990s     Drama               1,460                  1,427            105.00
+1990s     Crime                 183                    179            105.00
+1990s     Western                22                     21            102.00
+1990s     Foreign                17                     16            100.50
+1990s     Mystery                57                     56            100.00
+1990s     Thriller              170                    163             99.00
+1990s     Romance               146                    141             99.00
+1990s     Action                698                    690             98.00
+1990s     Adventure             198                    193             97.00
+1990s     Comedy              1,189                  1,153             96.00
+1990s     Fantasy               136                    132             96.00
+1990s     TV Movie               73                     70             95.00
+1990s     Science Fiction        97                     94             94.00
+1990s     Music                  60                     58             94.00
+1990s     Horror                237                    230             93.00
+1990s     Family                 75                     75             90.00
+1990s     Documentary           256                    246             86.50
+1990s     Animation             142                    140             74.00
+2000s     War                    54                     54            114.00
+2000s     History                49                     46            110.50
+2000s     Drama               3,135                  3,028            102.00
+2000s     Crime                 362                    351            102.00
+2000s     Romance               210                    201            102.00
+2000s     Adventure             340                    335            100.00
+2000s     Action              1,166                  1,135             98.00
+2000s     Thriller              330                    313             98.00
+2000s     Fantasy               170                    167             98.00
+2000s     Music                 101                     93             98.00
+2000s     Foreign                36                     33             98.00
+2000s     Western                16                     16             98.00
+2000s     Mystery               100                     99             96.00
+2000s     Comedy              2,232                  2,157             95.00
+2000s     Science Fiction       115                    111             92.00
+2000s     Horror                603                    590             91.00
+2000s     Family                112                    105             90.00
+2000s     TV Movie              104                    100             90.00
+2000s     Documentary         1,044                    995             88.00
+2000s     Animation             326                    322             76.00
+2010s     History                84                     81            105.00
+2010s     Crime                 319                    309            103.00
+2010s     Drama               3,186                  3,082            100.00
+2010s     Action              1,048                  1,025            100.00
+2010s     War                    75                     72            100.00
+2010s     Romance               392                    368             99.00
+2010s     Music                 121                    117             99.00
+2010s     Western                28                     28             98.50
+2010s     Adventure             304                    297             97.00
+2010s     Foreign                28                     26             96.50
+2010s     Mystery               157                    152             95.50
+2010s     Thriller              778                    744             95.00
+2010s     Comedy              2,323                  2,143             93.00
+2010s     Fantasy               143                    137             93.00
+2010s     Science Fiction       185                    183             91.00
+2010s     Horror                784                    762             90.00
+2010s     Family                203                    189             90.00
+2010s     Documentary         1,627                  1,562             88.50
+2010s     TV Movie              150                    138             86.50
+2010s     Animation             328                    323             80.00
+2020s     Action                  1                      0
+(all 232 rows written to output/task5_runtime_by_decade_and_genre.csv)
 [task 5 took 0.1 s]
 
 ==============================================================================
@@ -422,6 +446,8 @@ decade      avg_female_proportion    movies
 1970s                      0.3111     3,145
 
 Movies used in total: 39,680
+avg_female_proportion is the mean of the per-movie proportions (female / known gender among
+the top 5). Decades with only a few movies (e.g. the 1870s, 1890s and 2020s) are not reliable.
 [task 6 took 0.3 s]
 
 ==============================================================================
@@ -431,6 +457,8 @@ vote_average? Return title, year, vote_average, and vote_count.
 ==============================================================================
 Text search "noir": 60 movies, 5 of them with vote_count >= 50.
 (Searching "noir neo-noir" would add 43 movies where only "neo" matches, e.g. The Matrix Reloaded, The Matrix Revolutions, Akira.)
+Cross-check with a regex instead of the text index: 67 movies contain "noir" in overview or tagline, 6 of them with vote_count >= 50.
+So fewer than 20 movies can be returned: few overviews/taglines use the word.
 
 First result document:
 {'title': 'The Bad Sleep Well',
@@ -446,7 +474,7 @@ First result document:
      3  Elevator to the Gallows  1958              7.60            85  noir
      4  Synchronicity            2015              5.70           114  noir
      5  Frank & Lola             2016              5.70            51  noir
-[task 7 took 0.0 s]
+[task 7 took 0.2 s]
 
 ==============================================================================
 Task 8: Which 20 director-actor pairs with >= 3 collaborations (same movie)
@@ -458,7 +486,7 @@ First result document:
  'director': 'Akira Kurosawa',
  'actor': 'Eijirô Tôno',
  'films': 3,
- 'mean_vote_average': 8.133333333333333,
+ 'mean_vote_average': 8.133333,
  'films_with_revenue': 1,
  'mean_revenue': 271841.0}
 
@@ -484,7 +512,12 @@ First result document:
     18  Akira Kurosawa        Masao Shimizu           3                 8.03                     1          55,240
     19  Akira Kurosawa        Yûnosuke Itô            3                 8.03                     1          55,240
     20  Hayao Miyazaki        Tsunehiko Kamijô        3                 8.03                     2     217,150,202
-[task 8 took 0.4 s]
+
+mean_revenue is the mean of the known revenues (films_with_revenue).
+
+Directors who act in >= 3 of their own films (excluded above) with a mean vote_average at
+least as high as rank 20 (8.03): 0
+[task 8 took 0.6 s]
 
 ==============================================================================
 Task 9: Among movies where original_language != "en" but at least one
@@ -511,6 +544,9 @@ First result document:
      8  nl                         12  Killer Party                                       12
      9  ru                         11  Brother 2                                          39
     10  zh                         11  Crouching Tiger, Hidden Dragon                    949
+
+The production companies have no country in the data, so 'company is United States' can only
+be checked by name. TMDB uses the code 'xx' for movies with no language (e.g. silent films).
 [task 9 took 0.1 s]
 
 ==============================================================================
@@ -519,8 +555,10 @@ ratings, and number of distinct genres rated? List the top 10 most genre-
 diverse users, and separately the top 10 highest-variance users (only users
 with >= 20 ratings).
 ==============================================================================
-Statistics for 270,896 users written to the collection user_rating_stats (84 s).
+Statistics for 270,896 users written to the collection user_rating_stats (86 s).
 Users with >= 20 ratings: 166,444, of these with all 20 genres: 2,896
+Users with < 20 ratings and all 20 genres: 0
+Many users are tied at the maximum, so the top 10 is decided by the tie-breaker.
 
 First result document:
 {'_id': 12420, 'ratings': 53, 'variance': 0.560342, 'distinct_genres': 20}
@@ -540,6 +578,9 @@ Top 10 most genre-diverse users (ties: fewer ratings first):
     10  161691            73      0.4544                 20
 
 Users with >= 20 ratings at the highest possible variance 5.0625 (half 0.5, half 5.0): 6
+First result document:
+{'_id': 167241, 'ratings': 34, 'variance': 5.0625, 'distinct_genres': 14}
+
 Top 10 highest-variance users (ties: more ratings first):
   rank  user_id      ratings    variance    distinct_genres
 ------  ---------  ---------  ----------  -----------------
@@ -554,7 +595,7 @@ Top 10 highest-variance users (ties: more ratings first):
      9  179759            21      5.0510                 13
     10  221535           120      5.0400                 19
 (all 270,896 rows written to output/task10_user_rating_stats.csv)
-[task 10 took 85.2 s]
+[task 10 took 86.5 s]
 
 -----------------------------------------------
 Connection to movies_db-db is closed

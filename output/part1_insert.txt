@@ -4,21 +4,22 @@ You are connected to the database: movies_db
 
 Created collections movies and ratings (with $jsonSchema validators)
 
-Inserted 45,433 movies in 26 s
--------------------------------------------  ---------------
-Movies                                       45,433
-Movies with credits / keywords               45,432 / 45,432
-Movies with at least one MovieLens id        45,433
-Credits rows without a movie (not inserted)  0
-Keyword rows without a movie (not inserted)  0
--------------------------------------------  ---------------
-   5,000,000 ratings inserted (28 s)
-  10,000,000 ratings inserted (56 s)
-  15,000,000 ratings inserted (86 s)
-  20,000,000 ratings inserted (117 s)
-  25,000,000 ratings inserted (147 s)
+Inserted 45,433 movies in 22 s
+--------------------------------------------  ------------------------
+Movies                                        45,433
+Movies with a credits / keywords row          45,432 / 45,432
+Movies with non-empty cast / crew / keywords  43,018 / 44,661 / 31,092
+Movies with at least one MovieLens id         45,433
+Credits rows without a movie (not inserted)   0
+Keyword rows without a movie (not inserted)   0
+--------------------------------------------  ------------------------
+   5,000,000 ratings inserted (26 s)
+  10,000,000 ratings inserted (54 s)
+  15,000,000 ratings inserted (81 s)
+  20,000,000 ratings inserted (103 s)
+  25,000,000 ratings inserted (131 s)
 
-Inserted ratings in 2.6 minutes
+Inserted ratings in 2.3 minutes
 Step                                 Count
 -----------------------------------  ----------
 Ratings inserted                     26,024,289
@@ -26,13 +27,13 @@ Linked to a movie                    25,981,582
 movie_id null: no tmdbId             13,503
 movie_id null: tmdbId not in movies  29,204
 
-Created indexes in 31 s
+Created indexes in 26 s
 
 Documents per collection:
 Collection    Documents      Avg. bytes    Data MB    Storage MB  Indexes
 ------------  -----------  ------------  ---------  ------------  ---------------------------
-movies        45,433               3292      149.6          74.2  _id_, overview_tagline_text
-ratings       26,024,289            100     2628.3         773    _id_, user_movielens_unique
+movies        45,433               3292      149.6          75.5  _id_, overview_tagline_text
+ratings       26,024,289            100     2628.3         780.9  _id_, user_movielens_unique
 
 db.movies.find_one({'_id': 862}) with cast, crew and keywords cut to the first entries:
 {'_id': 862,
@@ -130,7 +131,7 @@ A repaired movie with unknown values (null), db.movies.find_one({'_id': 82663}):
  'movielens_ids': [97919]}
 
 db.ratings.find_one({'user_id': 1}):
-{'_id': ObjectId('6ade7f8482a8553275cb79e2'),
+{'_id': ObjectId('6ae221c2765ff0288cf3c18c'),
  'user_id': 1,
  'movie_id': 197,
  'movielens_id': 110,

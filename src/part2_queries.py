@@ -103,8 +103,9 @@ class MovieQueries:
 
     # ------------------------------------------------------------------ #
     def task1(self):
-        """Directors with >= 5 movies with known revenue: the 10 with the highest
-        median revenue, with their movie count and mean vote_average."""
+        """Directors with >= 5 movies: the 10 with the highest median revenue (over
+        their known revenues), with their movie count and mean vote_average. The
+        same list with >= 5 known revenues is shown as well."""
         per_director = [
             {"$unwind": "$crew"},
             {"$match": {"crew.job": "Director"}},
@@ -135,18 +136,18 @@ class MovieQueries:
                         ["rank", "director_id", "director", "movies", "movies_with_revenue", "median_revenue",
                          "mean_vote_average"])
 
-        # Main answer: >= 5 movies with known revenue, so that every median is
-        # computed from at least 5 values (revenue is unknown for most movies)
-        rows = top_10(5, 5)
-        print("Interpretation: directors with >= 5 movies WITH KNOWN REVENUE (the median is taken over")
-        print("the known revenues; movie count and mean vote_average are over all their movies).\n")
+        # Main answer, the literal reading of the question: >= 5 directed movies,
+        # median over the known revenues (at least one)
+        rows = top_10(5, 1)
+        print("Interpretation: directors with >= 5 movies (the median is taken over their known revenues;")
+        print("movie count and mean vote_average are over all their movies).\n")
         print_first_document(rows)
         show(rows)
-        # Literal reading of the question: >= 5 directed movies, median over the
-        # known revenues (at least one)
-        literal = top_10(5, 1)
-        print("\nLiteral reading: directors with >= 5 movies (median over their known revenues, >= 1):")
-        show(literal)
+        # Stricter reading: >= 5 movies with known revenue, so that every median is
+        # computed from at least 5 values (revenue is unknown for most movies)
+        strict = top_10(5, 5)
+        print("\nStricter reading: directors with >= 5 movies WITH KNOWN REVENUE (median over >= 5 values):")
+        show(strict)
         counts = self.aggregate("movies", per_director + [
             {"$group": {"_id": None, "at_least_5_movies": count_if({"$gte": ["$movies", 5]}),
                         "at_least_5_with_revenue": count_if({"$gte": ["$movies_with_revenue", 5]})}}])[0]

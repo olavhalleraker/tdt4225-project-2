@@ -1,0 +1,24 @@
+Connected to MongoDB 7.0.1
+You are connected to the database: movies_db
+-----------------------------------------------
+
+Query                                                  Collection    Plan (winning)                                                                   Docs examined    Keys examined    Returned
+-----------------------------------------------------  ------------  -----------------------------------------------------------------------------  ---------------  ---------------  ----------
+Task 7: text search for 'noir'                         movies        TEXT_MATCH (overview_tagline_text) <- FETCH <- IXSCAN (overview_tagline_text)               60               60          60
+Ratings of one user (left prefix of the unique index)  ratings       FETCH <- IXSCAN (user_movielens_unique)                                                     27               27          27
+Ratings of one movie (no index on movie_id)            ratings       COLLSCAN                                                                            26,024,289                0      66,008
+
+Task 10, $group per user on ratings: GROUP <- COLLSCAN
+
+Sizes in MB:
+Collection    Index                  MB
+------------  ---------------------  -------------
+movies        _id_                   0.5
+movies        overview_tagline_text  23.2
+movies        (data, storage)        149.6, 75.5
+ratings       _id_                   286.9
+ratings       user_movielens_unique  285.8
+ratings       (data, storage)        2628.3, 780.9
+
+-----------------------------------------------
+Connection to movies_db-db is closed
