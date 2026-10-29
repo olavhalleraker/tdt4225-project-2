@@ -154,6 +154,13 @@ class MovieQueries:
                         "at_least_5_with_revenue": count_if({"$gte": ["$movies_with_revenue", 5]})}}])[0]
         print("\nDirectors with >= 5 movies: {:,}, of these with >= 5 known revenues: {:,}"
               .format(counts["at_least_5_movies"], counts["at_least_5_with_revenue"]))
+        known = self.aggregate("movies", per_director + [
+            {"$match": {"movies": {"$gte": 5}}},
+            {"$bucket": {"groupBy": "$movies_with_revenue", "boundaries": [0, 1, 3, 5], "default": "5+",
+                         "output": {"directors": {"$sum": 1}}}}])
+        labels = {0: "0", 1: "1-2", 3: "3-4", "5+": ">= 5"}
+        print("Directors with >= 5 movies by number of known revenues (those with 0 have no median):")
+        print_table([[labels[r["_id"]], r["directors"]] for r in known], ["known_revenues", "directors"])
 
     def task2(self):
         """Actor pairs that have co-starred in >= 3 movies, with the number of
