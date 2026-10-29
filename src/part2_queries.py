@@ -337,12 +337,18 @@ class MovieQueries:
         print('(Searching "noir neo-noir" would add {} movies where only "neo" matches, e.g. {}.)'
               .format(len(also_neo), ", ".join(also_neo[:3])))
         # Check without the text index that the small number of matches comes from
-        # the data and not from the index (the regex also matches e.g. "noirish")
+        # the data and not from the index. The regex needs a word boundary before
+        # "noir", so it also matches e.g. "noirish" and "Noiret", but not "Renoir".
         word = {"$regex": r"\bnoir", "$options": "i"}
         in_text = {"$or": [{"overview": word}, {"tagline": word}]}
         voted = self.db.movies.count_documents({**in_text, "vote_count": {"$gte": 50}})
         print('Cross-check with a regex instead of the text index: {:,} movies contain "noir" in overview or'
               ' tagline, {:,} of them with vote_count >= 50.'.format(self.db.movies.count_documents(in_text), voted))
+        regex_only = list(self.db.movies.find({**in_text, "vote_count": {"$gte": 50}, "_id": {"$nin": list(noir_ids)}},
+                                              {"title": 1, "vote_count": 1}))
+        if regex_only:
+            print("Found by the regex but not by the text search (vote_count >= 50): {}".format(
+                ", ".join("%s (%d votes)" % (m["title"], m["vote_count"]) for m in regex_only)))
         if voted < 20:
             print("So fewer than 20 movies can be returned: few overviews/taglines use the word.")
         print()
