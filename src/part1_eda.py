@@ -530,6 +530,16 @@ class EDA:
                  ["Not US", f"{len(not_us):,}", known_share(not_us, "budget"), known_share(not_us, "revenue"),
                   known_share(not_us, "runtime"), known_share(not_us, "vote_average")]]
         table(rows, ["Group", "Movies", "budget known", "revenue known", "runtime known", "vote_average known"])
+        with_rev = [m for m in movies if m["revenue"] is not None]
+        def us_and_recent(selected):
+            return ("%.0f %%" % pct(sum(1 for m in selected if any(c["iso_3166_1"] == "US" for c in m["production_countries"])),
+                                    len(selected)),
+                    "%.0f %%" % pct(sum(1 for m in selected if m["release_date"] and m["release_date"].year >= 1990),
+                                    len(selected)))
+        print()
+        table([["Movies with known revenue", f"{len(with_rev):,}", *us_and_recent(with_rev)],
+               ["All movies", f"{len(movies):,}", *us_and_recent(movies)]],
+              ["", "Movies", "US production", "Released 1990 or later"])
         print("-> Missing budget/revenue is not spread evenly over decades and countries (compare the rows),")
         print("   so medians and totals of revenue (tasks 1, 4 and 8) mostly describe the movies where it is known.")
 
