@@ -384,7 +384,8 @@ class EDA:
             orders["consecutive 0..n-1" if o == list(range(len(o))) else
                    "duplicate order values" if len(set(o)) < len(o) else "gaps or other start"] += 1
         repeated = sum(1 for cast in casts if len({c["id"] for c in cast}) < len(cast))
-        directors = Counter(min(len({c["id"] for c in crew if c["job"] == "Director"}), 3) for crew in crews)
+        director_counts = [len({c["id"] for c in crew if c["job"] == "Director"}) for crew in crews]
+        directors = Counter(min(n, 3) for n in director_counts)
         director_acts = sum(1 for cast, crew in zip(casts, crews)
                             if {c["id"] for c in crew if c["job"] == "Director"} & {c["id"] for c in cast})
         print()
@@ -393,6 +394,7 @@ class EDA:
               [["Movies where an actor has more than one role", f"{repeated:,}"],
                ["Movies without a Director in the crew", f"{directors[0]:,}"],
                ["Movies with 1 / 2 / 3+ directors", "%s / %s / %s" % tuple(f"{directors[k]:,}" for k in (1, 2, 3))],
+               ["Max. directors of one movie", f"{max(director_counts):,}"],
                ["Movies where a director is also in the cast", f"{director_acts:,}"]])
 
         ids_per_name = defaultdict(set)
