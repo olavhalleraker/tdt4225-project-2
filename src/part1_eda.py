@@ -378,6 +378,8 @@ class EDA:
 
         orders = Counter()
         for cast in casts:
+            if not cast:  # an empty cast has no order to check
+                continue
             o = [c["order"] for c in cast]
             orders["consecutive 0..n-1" if o == list(range(len(o))) else
                    "duplicate order values" if len(set(o)) < len(o) else "gaps or other start"] += 1
@@ -386,6 +388,7 @@ class EDA:
         director_acts = sum(1 for cast, crew in zip(casts, crews)
                             if {c["id"] for c in crew if c["job"] == "Director"} & {c["id"] for c in cast})
         print()
+        print("Cast order (movies with a non-empty cast: {:,}):".format(sum(orders.values())))
         table([["Cast order %s" % k, f"{v:,}"] for k, v in orders.most_common()] +
               [["Movies where an actor has more than one role", f"{repeated:,}"],
                ["Movies without a Director in the crew", f"{directors[0]:,}"],
