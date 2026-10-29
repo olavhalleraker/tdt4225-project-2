@@ -46,6 +46,9 @@
    export DB_PASSWORD=<password>
    ```
 
+   Alternatively, copy `.env.example` to `.env`, fill it in and run
+   `set -a; source .env; set +a`.
+
 ## Run (from `src/`)
 
 ```bash
