@@ -287,6 +287,7 @@ class MovieQueries:
     def task6(self):
         """Share of women among the top-5 billed cast of each movie, averaged per
         decade (cast members with unknown gender are ignored)."""
+        with_cast = self.db.movies.count_documents({"release_date": {"$ne": None}, "cast.0": {"$exists": True}})
         rows = self.aggregate("movies", [
             {"$match": {"release_date": {"$ne": None}, "cast.0": {"$exists": True}}},
             {"$project": {"decade": decade("$release_date"),
@@ -304,7 +305,10 @@ class MovieQueries:
         print_first_document(rows)
         print_table([["%ds" % r["_id"], r["avg_female_proportion"], r["movies"]] for r in rows],
                     ["decade", "avg_female_proportion", "movies"], floatfmt=".4f")
-        print("\nMovies used in total: {:,}".format(sum(r["movies"] for r in rows)))
+        used = sum(r["movies"] for r in rows)
+        print("\nMovies with a cast and a release date: {:,}, of these with no known gender in the top 5: {:,}"
+              .format(with_cast, with_cast - used))
+        print("Movies used in total: {:,}".format(used))
         print("avg_female_proportion is the mean of the per-movie proportions (female / known gender among")
         print("the top 5). Decades with only a few movies (e.g. the 1870s, 1890s and 2020s) are not reliable.")
 
