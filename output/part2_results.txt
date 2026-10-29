@@ -47,7 +47,14 @@ Stricter reading: directors with >= 5 movies WITH KNOWN REVENUE (median over >= 
     10  7879           John Lasseter           10                      5       461,983,149                 6.72
 
 Directors with >= 5 movies: 2,281, of these with >= 5 known revenues: 382
-[task 1 took 3.9 s]
+Directors with >= 5 movies by number of known revenues (those with 0 have no median):
+known_revenues      directors
+----------------  -----------
+0                         974
+1-2                       617
+3-4                       308
+>= 5                      382
+[task 1 took 8.5 s]
 
 ==============================================================================
 Task 2: List actor pairs that have co-starred in >= 3 movies together, their
@@ -97,7 +104,7 @@ Top 30 by co-appearances (ties by average vote_average):
     29  18897         Jackie Chan       62410         Sammo Hung                     17                6.84
     30  15831         Frank Welker      86314         Mindy Cohn                     17                6.66
 (all 45,650 rows written to output/task2_actor_pairs.csv)
-[task 2 took 40.4 s]
+[task 2 took 44.4 s]
 
 ==============================================================================
 Task 3: List the top 10 actors (with >= 10 credited movies) that have the
@@ -131,7 +138,7 @@ Top 10 by distinct genres (ties: fewer credited movies first). Example genres = 
      8  2440        Bill Nighy                      61                 20  Comedy (29), Drama (29), Action (16), Family (13), Adventure (12)
      9  1954        Billy Zane                      64                 20  Drama (31), Thriller (24), Action (21), Comedy (18), Horror (12)
     10  147         Michael Madsen                  65                 20  Thriller (31), Drama (27), Action (26), Crime (14), Horror (12)
-[task 3 took 2.2 s]
+[task 3 took 2.0 s]
 
 ==============================================================================
 Task 4: For film collections (belongs_to_collection.name not null) with >= 3
@@ -445,6 +452,7 @@ decade      avg_female_proportion    movies
 1980s                      0.3200     3,555
 1970s                      0.3111     3,145
 
+Movies with a cast and a release date: 43,000, of these with no known gender in the top 5: 3,320
 Movies used in total: 39,680
 avg_female_proportion is the mean of the per-movie proportions (female / known gender among
 the top 5). Decades with only a few movies (e.g. the 1870s, 1890s and 2020s) are not reliable.
@@ -458,6 +466,7 @@ vote_average? Return title, year, vote_average, and vote_count.
 Text search "noir": 60 movies, 5 of them with vote_count >= 50.
 (Searching "noir neo-noir" would add 43 movies where only "neo" matches, e.g. The Matrix Reloaded, The Matrix Revolutions, Akira.)
 Cross-check with a regex instead of the text index: 67 movies contain "noir" in overview or tagline, 6 of them with vote_count >= 50.
+Found by the regex but not by the text search (vote_count >= 50): Phoenix (147 votes)
 So fewer than 20 movies can be returned: few overviews/taglines use the word.
 
 First result document:
@@ -492,32 +501,33 @@ First result document:
 
   rank  director              actor               films    mean_vote_average    films_with_revenue    mean_revenue
 ------  --------------------  ----------------  -------  -------------------  --------------------  --------------
-     1  Akira Kurosawa        Eijirô Tôno             3                 8.13                     1         271,841
-     2  Akira Kurosawa        Haruo Suzuki            3                 8.13                     1         271,841
-     3  Akira Kurosawa        Minoru Itô              3                 8.13                     1         271,841
-     4  Charlie Chaplin       Hank Mann               3                 8.13                     3       6,506,394
-     5  Akira Kurosawa        Atsushi Watanabe        3                 8.10                     2         163,540
-     6  Akira Kurosawa        Toranosuke Ogawa        3                 8.10                     2         163,540
-     7  Francis Ford Coppola  John Cazale             3                 8.10                     3      99,009,751
-     8  Quentin Tarantino     Harvey Keitel           3                 8.10                     3     182,573,606
-     9  Akira Kurosawa        Daisuke Katô            4                 8.07                     3         141,216
-    10  Akira Kurosawa        Ichirô Chiba            4                 8.07                     2         163,540
-    11  Akira Kurosawa        Noriko Honma            4                 8.07                     3         141,216
-    12  Francis Ford Coppola  Robert Duvall           4                 8.07                     4      96,622,408
-    13  Akira Kurosawa        Haruya Sakamoto         3                 8.07                     1         271,841
-    14  Akira Kurosawa        Shôichi Hirose          3                 8.07                     1         271,841
-    15  Akira Kurosawa        Susumu Fujita           3                 8.07                     0
-    16  Akira Kurosawa        Isao Kimura             4                 8.05                     2         163,540
-    17  Akira Kurosawa        Minoru Chiaki           6                 8.03                     3         141,216
-    18  Akira Kurosawa        Masao Shimizu           3                 8.03                     1          55,240
-    19  Akira Kurosawa        Yûnosuke Itô            3                 8.03                     1          55,240
-    20  Hayao Miyazaki        Tsunehiko Kamijô        3                 8.03                     2     217,150,202
+     1  Akira Kurosawa        Eijirô Tôno             3                8.133                     1         271,841
+     2  Akira Kurosawa        Haruo Suzuki            3                8.133                     1         271,841
+     3  Akira Kurosawa        Minoru Itô              3                8.133                     1         271,841
+     4  Charlie Chaplin       Hank Mann               3                8.133                     3       6,506,394
+     5  Akira Kurosawa        Atsushi Watanabe        3                8.100                     2         163,540
+     6  Akira Kurosawa        Toranosuke Ogawa        3                8.100                     2         163,540
+     7  Francis Ford Coppola  John Cazale             3                8.100                     3      99,009,751
+     8  Quentin Tarantino     Harvey Keitel           3                8.100                     3     182,573,606
+     9  Akira Kurosawa        Daisuke Katô            4                8.075                     3         141,216
+    10  Akira Kurosawa        Ichirô Chiba            4                8.075                     2         163,540
+    11  Akira Kurosawa        Noriko Honma            4                8.075                     3         141,216
+    12  Francis Ford Coppola  Robert Duvall           4                8.075                     4      96,622,408
+    13  Akira Kurosawa        Haruya Sakamoto         3                8.067                     1         271,841
+    14  Akira Kurosawa        Shôichi Hirose          3                8.067                     1         271,841
+    15  Akira Kurosawa        Susumu Fujita           3                8.067                     0
+    16  Akira Kurosawa        Isao Kimura             4                8.050                     2         163,540
+    17  Akira Kurosawa        Minoru Chiaki           6                8.033                     3         141,216
+    18  Akira Kurosawa        Masao Shimizu           3                8.033                     1          55,240
+    19  Akira Kurosawa        Yûnosuke Itô            3                8.033                     1          55,240
+    20  Hayao Miyazaki        Tsunehiko Kamijô        3                8.033                     2     217,150,202
 
 mean_revenue is the mean of the known revenues (films_with_revenue).
+Pairs with a mean vote_average at least as high as rank 20 (8.033): 27 (more than 20 means that pairs tied at the cut-off are left out by the tie-break)
 
 Directors who act in >= 3 of their own films (excluded above) with a mean vote_average at
 least as high as rank 20 (8.03): 0
-[task 8 took 0.6 s]
+[task 8 took 1.2 s]
 
 ==============================================================================
 Task 9: Among movies where original_language != "en" but at least one
@@ -555,7 +565,7 @@ ratings, and number of distinct genres rated? List the top 10 most genre-
 diverse users, and separately the top 10 highest-variance users (only users
 with >= 20 ratings).
 ==============================================================================
-Statistics for 270,896 users written to the collection user_rating_stats (86 s).
+Statistics for 270,896 users written to the collection user_rating_stats (126 s).
 Users with >= 20 ratings: 166,444, of these with all 20 genres: 2,896
 Users with < 20 ratings and all 20 genres: 0
 Many users are tied at the maximum, so the top 10 is decided by the tie-breaker.
@@ -595,7 +605,7 @@ Top 10 highest-variance users (ties: more ratings first):
      9  179759            21      5.0510                 13
     10  221535           120      5.0400                 19
 (all 270,896 rows written to output/task10_user_rating_stats.csv)
-[task 10 took 86.5 s]
+[task 10 took 127.4 s]
 
 -----------------------------------------------
 Connection to movies_db-db is closed

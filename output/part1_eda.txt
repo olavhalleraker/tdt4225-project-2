@@ -326,13 +326,15 @@ All cast entries   562,044    19.9 %    40.3 %  39.8 %
 Top-5 billed cast  202,303    25.5 %    46.0 %  28.5 %
 Crew entries       463,836    6.7 %     34.6 %  58.6 %
 
+Cast order (movies with a non-empty cast: 43,018):
 --------------------------------------------  --------------------
-Cast order consecutive 0..n-1                 33,991
+Cast order consecutive 0..n-1                 31,576
 Cast order gaps or other start                11,355
 Cast order duplicate order values             87
 Movies where an actor has more than one role  951
 Movies without a Director in the crew         888
 Movies with 1 / 2 / 3+ directors              41,350 / 2,714 / 481
+Max. directors of one movie                   42
 Movies where a director is also in the cast   3,754
 --------------------------------------------  --------------------
 
@@ -432,6 +434,11 @@ Group          Movies    budget known    revenue known    runtime known    vote_
 2020s          1         0.0 %           0.0 %            0.0 %            0.0 %
 US production  21,142    29.3 %          26.2 %           99.2 %           95.4 %
 Not US         24,291    10.1 %          7.0 %            93.2 %           91.7 %
+
+                           Movies    US production    Released 1990 or later
+-------------------------  --------  ---------------  ------------------------
+Movies with known revenue  7,244     77 %             79 %
+All movies                 45,433    47 %             65 %
 -> Missing budget/revenue is not spread evenly over decades and countries (compare the rows),
    so medians and totals of revenue (tasks 1, 4 and 8) mostly describe the movies where it is known.
 
