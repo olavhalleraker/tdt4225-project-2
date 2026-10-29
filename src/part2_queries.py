@@ -42,7 +42,8 @@ def save_csv(filename, headers, rows):
     with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(headers)
-        writer.writerows(rows)
+        # round decimals so that the CSV has no floating-point noise such as 6.3549999999999995
+        writer.writerows([[round(v, 4) if isinstance(v, float) else v for v in row] for row in rows])
     print("(all {:,} rows written to output/{})".format(len(rows), filename))
 
 
