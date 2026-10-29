@@ -83,4 +83,4 @@ python explain_indexes.py | tee ../output/explain_indexes.txt
   tasks scan the whole `movies` collection (about 150 MB), so more indexes would
   not help them. `explain_indexes.py` shows this.
 - **Bulk insert.** Ratings are streamed from the CSV file and inserted in batches
-  of 50,000 with `ordered=False` (about 2.6 minutes for 26 million ratings).
+  of 50,000 with `ordered=False` (about 2.3 minutes for 26 million ratings).
