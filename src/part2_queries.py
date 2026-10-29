@@ -365,7 +365,7 @@ class MovieQueries:
         A collaboration is read as two different people, so a director who acts
         in their own film is not paired with themself. These self-pairs are
         listed separately below the main table."""
-        def pairs(same_person):
+        def pairs(same_person, limit=20):
             return self.aggregate("movies", [
                 {"$match": {"vote_count": {"$gte": 100}}},
                 {"$project": {"vote_average": 1, "revenue": 1, "director": directors_of_movie(),
@@ -384,15 +384,14 @@ class MovieQueries:
                 # rounded so that equal means are not ordered by floating-point noise
                 {"$set": {"mean_vote_average": {"$round": ["$mean_vote_average", 6]}}},
                 {"$sort": {"mean_vote_average": DESCENDING, "films": DESCENDING, "director": 1, "actor": 1}},
-                {"$limit": 20},
-            ])
+            ] + ([{"$limit": limit}] if limit else []))
 
         def show(rows):
             print_table([[rank, r["director"], r["actor"], r["films"], r["mean_vote_average"],
                           r["films_with_revenue"], None if r["mean_revenue"] is None else round(r["mean_revenue"])]
                          for rank, r in enumerate(rows, start=1)],
                         ["rank", "director", "actor", "films", "mean_vote_average", "films_with_revenue",
-                         "mean_revenue"])
+                         "mean_revenue"], floatfmt=".3f")
 
         rows = pairs(same_person=False)
         print_first_document(rows)
@@ -402,6 +401,10 @@ class MovieQueries:
         if not rows:
             return
         cutoff = rows[-1]["mean_vote_average"]
+        at_cutoff = [r for r in pairs(same_person=False, limit=None) if r["mean_vote_average"] >= cutoff]
+        print("Pairs with a mean vote_average at least as high as rank {} ({:.3f}): {} (more than {} means that"
+              " pairs tied at the cut-off are left out by the tie-break)".format(len(rows), cutoff, len(at_cutoff),
+                                                                            len(rows)))
         self_pairs = [r for r in pairs(same_person=True) if r["mean_vote_average"] >= cutoff]
         print("\nDirectors who act in >= 3 of their own films (excluded above) with a mean vote_average at")
         print("least as high as rank {} ({:.2f}): {}".format(len(rows), cutoff, len(self_pairs)))
